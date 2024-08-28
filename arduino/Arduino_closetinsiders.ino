@@ -5,8 +5,9 @@
 #define RST_PIN 9
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Creating an instance of the Card Reader
 
-// Using a fixed-size String array for registered IDs
-String registered[] = {"A3 3A 33 1B", "B3 10 4C F5", "C3 26 00 9C"};
+#define MAX_REGISTERED 10 // Maximum number of registered items
+String registered[MAX_REGISTERED] = {"A3 3A 33 1B", "B3 10 4C F5", "C3 26 00 9C"};
+int registeredCount = 3; // Initial number of registered items
 
 void setup() {
   Serial.begin(9600);
@@ -40,7 +41,7 @@ void loop() {
   cardID.toUpperCase(); // Convert to uppercase
 
   bool isRegistered = false;
-  for (int j = 0; j < sizeof(registered) / sizeof(registered[0]); j++) {
+  for (int j = 0; j < registeredCount; j++) {
     if (cardID.substring(1) == registered[j]) {
       isRegistered = true;
       break;
@@ -58,6 +59,15 @@ void loop() {
     delay(3000); // A small delay
   } else {
     Serial.println("Clothing Item Has Not Been Registered");
+
+    // Register the new card if there is space in the array
+    if (registeredCount < MAX_REGISTERED) {
+      registered[registeredCount] = cardID.substring(1);
+      registeredCount++;
+      Serial.println("Item Registered Successfully");
+    } else {
+      Serial.println("Registration Failed: Maximum limit reached");
+    }
     Serial.println();
     delay(3000);
   }
