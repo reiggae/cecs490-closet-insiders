@@ -1,0 +1,10 @@
+Clothing ID: 39 20 1A B8
+Clothing Name: Andrew's Shirt
+- Short Sleeve
+- Large
+- Blue
+- Vacation
+Clothing ID: 29 A9 D7 C0
+Clothing Name: Andrew's Pants
+- Large
+- Black
