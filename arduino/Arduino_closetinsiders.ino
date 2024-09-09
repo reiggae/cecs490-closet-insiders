@@ -1,8 +1,8 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define SS_PIN 3 //SDA
-#define RST_PIN 2 //RST
+#define SS_PIN 10 //SDA
+#define RST_PIN 9 //RST
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Creating an instance of the Card Reader
 
 // SCK 13, MOSI 11, MISO 12
@@ -111,7 +111,7 @@ void handleAuthorizedUser() {
     handleItemRegistration(cardID);
     
     // Add a delay to prevent the same card from being scanned twice quickly
-    delay(1000); // 1 second delay, can be adjusted if necessary
+    delay(3000); // 3 second delay, can be adjusted if necessary
   }
 }
 
@@ -135,12 +135,12 @@ void handleItemRegistration(String cardID) {
       Serial.println("Clothing Item Checked Out");
     }
     Serial.println();
-    delay(3000); // A small delay
+    delay(1000); // A small delay
   } else {
     Serial.println("Clothing Item Has Not Been Registered");
     char response;
 
-    // Prompt the user to register the item until they provide a valid response (Y/N)
+    // Prompt the user to register the item until they provide a correct response (Y/N)
     do {
       Serial.println("Do you want to register this clothing item? (Y/N)");
       while (!Serial.available()); // Wait until something is entered
@@ -162,6 +162,48 @@ void handleItemRegistration(String cardID) {
       Serial.println("Clothing Item Not Registered");
     }
     Serial.println();
-    delay(3000);
+    delay(1000);
   }
 }
+
+// setup for the serial communication between Arduino and Pi
+// Arduino Uno -> Pi 5 Connections
+//     Connect the GND pin to the Raspberry Pi’s GND.
+//     Connect the TX (Pin 1) of the Arduino Uno to the RX pin (GPIO 15, Pin 10) of the Raspberry Pi.
+//     Connect the RX (Pin 0) of the Arduino Uno to the TX pin (GPIO 14, Pin 8) of the Raspberry Pi.
+
+// #include <SPI.h>
+// #include <MFRC522.h>
+
+// #define SS_PIN 10 // SDA
+// #define RST_PIN 9 // RST
+// MFRC522 mfrc522(SS_PIN, RST_PIN); // Creating an instance of the Card Reader
+
+// void setup() {
+//   Serial.begin(9600);     // Initialize serial communication
+//   SPI.begin();            // Initialize SPI bus
+//   mfrc522.PCD_Init();     // Initialize MFRC522 RFID reader
+//   Serial.println("Waiting for card...");
+// }
+
+// void loop() {
+//   // Checks if a new card is present
+//   if (!mfrc522.PICC_IsNewCardPresent()) {
+//     return; // If no card is detected
+//   }
+//   if (!mfrc522.PICC_ReadCardSerial()) {
+//     return;
+//   }
+
+//   // Retrieve and send the card ID to Raspberry Pi
+//   String cardID = ""; // Stores the ID of the card
+//   for (byte i = 0; i < mfrc522.uid.size; i++) {
+//     cardID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+//     cardID.concat(String(mfrc522.uid.uidByte[i], HEX));
+//   }
+
+//   cardID.toUpperCase(); // Convert to uppercase
+//   Serial.println(cardID); // Send the card ID over Serial to Raspberry Pi
+//   delay(1000); // Delay to prevent immediate repeat scans
+// }
+
