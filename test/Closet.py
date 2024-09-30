@@ -146,6 +146,32 @@ def load_closet(closet, filename):
 
     print(f"Closet loaded from {filename}")
 
+def switch_ids(closet):
+    id1 = input("Enter the first Clothing ID: ")
+    id2 = input("Enter the second Clothing ID: ")
+
+    clothes1 = None
+    clothes2 = None
+
+    #Find both clothing IDs
+    for clothing in closet:
+        if clothing.ID == id1:
+            clothes1 = clothing
+        elif clothing.ID == id2:
+            clothes2 = clothing
+
+        if clothes1 and clothes2:
+            break
+    
+    #If both are found, swap IDs
+    if clothes1 and clothes2:
+        clothes1.ID, clothes2.ID = clothes2.ID, clothes1.ID
+        clothes1.name, clothes2.name = clothes2.name, clothes1.name
+        clothes1.details, clothes2.details = clothes2.details, clothes1.details
+        print("The IDs have been swapped")
+    else:
+        print("One or both Clothing IDs are invalid.")
+
 def main():
     # Create a list to store the Clothings
     closet = []
@@ -159,10 +185,11 @@ def main():
         print("3. View current closet")
         print("4. Update current clothing")
         print("5. Search for specific clothing")
-        print("6. Save closet information to a text file")
-        print("7. Load closet information from a text file")
-        print("8. Exit")
-        command = input("Select options from 1 to 8: ")
+        print("6. Swap clothing")
+        print("7. Save closet information to a text file")
+        print("8. Load closet information from a text file")
+        print("9. Exit")
+        command = input("Select options from 1 to 9: ")
         
         if command == "done":
             break
@@ -177,12 +204,14 @@ def main():
         elif command == "5":
             search_clothes(closet)
         elif command == "6":
+            switch_ids(closet)
+        elif command == "7":
             filename = input("Enter file name to save to: ")
             save_closet(closet, filename)
-        elif command == "7":
+        elif command == "8":
             filename = input("Enter file name to load from: ")
             load_closet(closet, filename)
-        elif command == "8":
+        elif command == "9":
             break
         else:
             print("Invalid command. Select a valid number.")
