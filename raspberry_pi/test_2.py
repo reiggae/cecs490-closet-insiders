@@ -1,17 +1,26 @@
-#This is just to have the raspberry pi recieve the Tag IDs.
 import serial
+import time
 
-# Adjust the port and baud rate as necessary
-ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+SERIAL_PORT = '/dev/ttyACM0'  # Port Number for the Card Reader
+BAUD_RATE = 115200
 
-print("Waiting for Tag IDs...")
+def main():
+    try:
+        with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1) as ser:
+            print(f"Connected to {SERIAL_PORT} at {BAUD_RATE} baud")
+            print("Waiting for Tag IDs... (Press Ctrl+C to exit)")
 
-while True:  # Infinite loop to continuously check for incoming data
-    if ser.in_waiting > 0:  # Check if there's any data 
-        # Read a line from the serial port, decode it from bytes to ASCII string,
-        # and remove any leading/trailing whitespace but if you want the whitespaces remove ".strip()
-        card_id = ser.readline().decode('ascii').strip()
-        
-        if card_id:  # Check if card_id is not empty
-            # If a non-empty card ID was received, print it
-            print(f"Card ID received: {card_id}")
+            while True:
+                if ser.in_waiting > 0:
+                    card_id = ser.readline().decode('ascii').strip()
+                    if card_id:
+                        print(f"Card ID received: {card_id}")
+                time.sleep(0.1)  # Short delay to reduce CPU usage
+
+    except serial.SerialException as e:
+        print(f"Error opening serial port: {e}")
+    except KeyboardInterrupt:
+        print("\nExiting program.")
+
+if __name__ == "__main__":
+    main()
