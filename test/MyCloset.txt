@@ -1,10 +1,10 @@
-Clothing ID: 39 20 1A B8
+Clothing ID: 39201AB8
 Clothing Name: Andrew's Shirt
 - Short Sleeve
 - Large
-- Red
-Clothing ID: 29 A9 D7 C0
+- Gray
+Clothing ID: 29A9D7C0
 Clothing Name: Andrew's Pants
 - Large
 - Shorts
-- Grey
+- Red
