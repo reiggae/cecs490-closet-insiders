@@ -3,27 +3,34 @@ from picamera2 import Picamera2, Preview
 from capture_and_process_image import capture_and_process_image
 from read_card_id import read_card_id
 
-def input_clothing(ser=None):
+def input_clothing(closet, ser=None):
     clothing = Clothing()
-    picam2 = Picamera2()
+    ID_array = [clothes.ID for clothes in closet]
     
-    if ser:
-        print("Please scan the clothing tag or enter the ID manually:")
-        card_id = read_card_id(ser)
-        if card_id:
-            clothing.ID = card_id
-            print(f"Clothing ID scanned: {clothing.ID}")
+    while True:
+        if ser:
+            print("Please scan the clothing tag or enter the ID manually:")
+            card_id = read_card_id(ser)
+            if card_id:
+                clothing.ID = card_id
+                print(f"Clothing ID scanned: {clothing.ID}")
+            else:
+                clothing.ID = input("Enter Clothing ID manually: ")
         else:
-            clothing.ID = input("Enter Clothing ID manually: ")
-    else:
-        clothing.ID = input("Enter Clothing ID: ")
+            clothing.ID = input("Enter Clothing ID: ")
+                
+        if clothing.ID in ID_array:
+            print("Tag is already registered. Use another tag. ")
+        else:
+            ID_array.append(clothing.ID)
+            break
     
+        
     clothing.name = input("Enter Clothing Name: ")
     if not clothing.name.endswith(".png"):
         print("Skipping image capture.")
-        
     else:
-
+        picam2 = Picamera2()
         # Loop until the user is happy with the image
         while True:
             # Capture and process the image
