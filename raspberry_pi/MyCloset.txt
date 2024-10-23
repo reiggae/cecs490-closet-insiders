@@ -9,10 +9,11 @@ Clothing Name: Andrew's Swim Pants
 - Shorts
 - Yellow
 Clothing ID: B3104CF5
-Clothing Name: Andrew's Casual Shorts
+Clothing Name: Andrew's Shorts
 - Green
 - Large
 - Shorts
+- Casual
 Clothing ID: 28FD43ED
 Clothing Name: Andrew's Formal Shirt
 - Short Sleeve
