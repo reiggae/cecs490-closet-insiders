@@ -11,6 +11,7 @@ from save_closet import save_closet
 from load_closet import load_closet
 from sort_by_color import sort_by_color
 from checking_system import checking_system
+from check_items import check_items
 
 
 def main():
@@ -40,25 +41,25 @@ def main():
         print("7. Save closet information to a text file")
         print("8. Load closet information from a text file")
         print("9. Sort closet by color")
-        print("10. Check in clothing")
-        print("11. Check out clothing")
+        print("10. Check in/out clothing")
+        print("11. Check to see which clothes are checked in/out")
         print("12. Exit")
         command = input("Select options from 1 to 12: ")
         
         if command == "done":
             break
         elif command == "1":
-            closet.append(input_clothing(closet))
+            closet.append(input_clothing(closet,ser))
         elif command == "2":
-            remove_clothes(closet)    
+            remove_clothes(closet, ser)    
         elif command == "3":
             print_closet(closet)
         elif command == "4":
-            update_clothes(closet)    
+            update_clothes(closet, ser)    
         elif command == "5":
             search_clothes(closet)
         elif command == "6":
-            switch_ids(closet)
+            switch_ids(closet, ser)
         elif command == "7":
             filename = input("Enter file name to save to: ")
             save_closet(closet, filename)
@@ -67,10 +68,30 @@ def main():
             load_closet(closet, filename)
         elif command == "9":
             sort_by_color(closet)
+            print_closet(closet)
+            print("Closet sorted by color.")
         elif command == "10":
-            checking_system(closet, True)
+            while True:
+                choice = input("Do you want to check 'in' or 'out'? ")
+                if choice == "in":
+                    checking_system(closet, True, ser)
+                    break
+                elif choice == "out":
+                    checking_system(closet, False, ser)
+                    break
+                else:
+                    print("Invalid selection. Please try again.")
         elif command == "11":
-            checking_system(closet, False)
+            while True:
+                choice = input("Do you want to see checked 'in' or 'out' items? ")
+                if choice == "in":
+                    check_items(closet, True)
+                    break
+                elif choice == "out":
+                    check_items(closet, False)
+                    break
+                else:
+                    print("Invalid selection. Please try again.") 
         elif command == "12":
             break
         else:
