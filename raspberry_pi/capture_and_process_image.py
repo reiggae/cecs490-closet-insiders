@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 def capture_and_process_image(picam2, file_name):
     # Define the path where the image will be saved
-    save_path = f"/home/andrewsCloset/Desktop/Serial_Communication/Closet_Image/{file_name}"
+    save_path = f"/home/andrewsCloset/Desktop/Inventory_System/raspberry_pi/Closet_Image/{file_name}"
 
     # Configure the camera for preview
     camera_config = picam2.create_preview_configuration()
