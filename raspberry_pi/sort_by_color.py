@@ -21,4 +21,3 @@ def sort_by_color(closet):
     
     closet[:] = [clothing for _, clothing in colored_clothes] + uncolored_clothes
 
-    print("Closet sorted by color.")
