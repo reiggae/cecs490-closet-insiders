@@ -3,30 +3,36 @@ Clothing Name: Andrew's Pants
 - Large
 - Shorts
 - Red
+Status: checked 0ut
 Clothing ID: AS5WE2SF
 Clothing Name: Andrew's Swim Pants
 - Large
 - Shorts
 - Yellow
+Status: checked in
 Clothing ID: B3104CF5
 Clothing Name: Andrew's Shorts
 - Green
 - Large
 - Shorts
 - Casual
+Status: checked out
 Clothing ID: 28FD43ED
 Clothing Name: Andrew's Formal Shirt
 - Short Sleeve
 - Large
 - Blue
+Status: checked out
 Clothing ID: C326009C
 Clothing Name: Andrew's Other Formal Shirt
 - Black
 - Polo
 - Short Sleeve
 - Large
+Status: checked in
 Clothing ID: 39201AB8
 Clothing Name: Andrew's Shirt
 - Short Sleeve
 - Large
 - Gray
+Status: checked in
