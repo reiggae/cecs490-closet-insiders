@@ -1,13 +1,24 @@
 # Define a class to hold the clothing details
 class Clothing:
+    position_spots = set()
+    available_position = 1
     def __init__(self):
         self.name = ""
         self.ID = ""
         self.details = []
         self.is_checked_in = False
+        position_number = None
+
+        if position_number is None:
+            while Clothing.available_position in Clothing.position_spots:
+                Clothing.available_position += 1
+            position_number = Clothing.available_position
+            Clothing.available_position += 1
+
 
     # Function to print clothing details
     def print(self):
+        print(f"Position Number: {self.position_number}")
         print(f"Clothing ID: {self.ID}")
         print(f"Clothing Name: {self.name}")
         print("Tags:")
