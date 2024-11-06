@@ -1,5 +1,17 @@
-from closet_inventory import Clothing
+import os
 import serial
+from clothing_inventory import Clothing
+from clothing_inventory import input_clothing
+from clothing_inventory import remove_clothes
+from clothing_inventory import print_closet
+from clothing_inventory import update_clothes
+from clothing_inventory import search_clothes
+from clothing_inventory import switch_ids
+from clothing_inventory import save_closet
+from clothing_inventory import load_closet
+from clothing_inventory import sort_by_color
+from clothing_inventory import checking_system
+from clothing_inventory import check_items
 
 def main():
     SERIAL_PORT = '/dev/ttyACM0'
