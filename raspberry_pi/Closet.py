@@ -1,3 +1,4 @@
+from closet_inventory import Clothing
 import os
 import serial
 
