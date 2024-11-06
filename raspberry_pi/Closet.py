@@ -1,18 +1,5 @@
 import os
 import serial
-from clothing import Clothing
-from input_clothing import input_clothing
-from remove_clothes import remove_clothes
-from print_closet import print_closet
-from update_clothes import update_clothes
-from search_clothes import search_clothes
-from switch_ids import switch_ids
-from save_closet import save_closet
-from load_closet import load_closet
-from sort_by_color import sort_by_color
-from checking_system import checking_system
-from check_items import check_items
-
 
 def main():
     SERIAL_PORT = '/dev/ttyACM0'
