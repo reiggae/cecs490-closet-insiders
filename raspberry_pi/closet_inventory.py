@@ -6,21 +6,12 @@ import os
 color_order = {"Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Black": 7, "White": 8, "Gray": 9, "Brown": 10}
 # Define a class to hold the clothing details
 class Clothing:
-    position_spots = set()
-    available_position = 1
     def __init__(self):
         self.name = ""
         self.ID = ""
         self.details = []
         self.is_checked_in = False
-        position_number = None
-
-        if position_number is None:
-            while Clothing.available_position in Clothing.position_spots:
-                Clothing.available_position += 1
-            position_number = Clothing.available_position
-            Clothing.available_position += 1
-
+	    
     # Function to print clothing details
     def print(self):
         print(f"Position Number: {self.position_number}")
@@ -64,7 +55,7 @@ def input_clothing(closet, ser=None):
             break
     
         
-    clothing.name = input("Enter Clothing Name: ")
+    clothing.name = input("Enter Clothing Name(add .png if you want to take a picture: ")
     if not clothing.name.endswith(".png"):
         print("Skipping image capture.")
     else:
