@@ -1,16 +1,16 @@
 import os
 import serial
-from clothing import Clothing
-from input_clothing import input_clothing
-from remove_clothes import remove_clothes
-from print_closet import print_closet
-from update_clothes import update_clothes
-from search_clothes import search_clothes
-from switch_ids import switch_ids
-from save_closet import save_closet
-from load_closet import load_closet
-from sort_by_color import sort_by_color
-from checking_system import checking_system
+from raspberry_pi.closet_inventory import Clothing
+from raspberry_pi.closet_inventory import input_clothing
+from raspberry_pi.closet_inventory import remove_clothes
+from raspberry_pi.closet_inventory import print_closet
+from raspberry_pi.closet_inventory import update_clothes
+from raspberry_pi.closet_inventory import search_clothes
+from raspberry_pi.closet_inventory import switch_ids
+from raspberry_pi.closet_inventory import save_closet
+from raspberry_pi.closet_inventory import load_closet
+from raspberry_pi.closet_inventory import sort_by_color
+from raspberry_pi.closet_inventory import checking_system
 
 
 def main():

@@ -1,6 +1,14 @@
+from read_card_id import read_card_id
+
 # Function to update clothing
-def update_clothes(closet):
-    chosen_id = input("Enter the clothing ID that you want to update: ")
+def update_clothes(closet, ser=None):
+    if ser:
+        print("Please scan the clothing tag or enter the ID manually:")
+        chosen_id = read_card_id(ser)
+        if not chosen_id:
+            chosen_id = input("Enter the clothing ID that you want to update: ")
+    else:
+        chosen_id = input("Enter the clothing ID that you want to update: ")
 
     for clothing in closet:
         if clothing.ID == chosen_id:

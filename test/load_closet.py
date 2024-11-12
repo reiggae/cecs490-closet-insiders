@@ -15,15 +15,15 @@ def load_closet(closet, filename):
             line = line.strip()
             if "Clothing ID:" in line:
                 if clothes.name:
-                    closet.append(clothes)  # Save the previous clothing item before starting a new one
-                clothes = Clothing()  # Reset the clothing object for the new item
+                    closet.append(clothes)
+                clothes = Clothing()
                 clothes.ID = line.split(": ")[1]
             elif "Clothing Name:" in line:
                 clothes.name = line.split(": ")[1]
             elif line.startswith("- "):
-                clothes.details.append(line[2:])  # Add the detail to the list
+                clothes.details.append(line[2:])
 
     if clothes.name:
-        closet.append(clothes)  # Save the last clothing item
+        closet.append(clothes)
 
     print(f"Closet loaded from {filename}")
