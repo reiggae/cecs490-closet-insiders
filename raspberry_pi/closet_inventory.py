@@ -176,6 +176,7 @@ def switch_ids(closet, ser=None):
         clothes1.ID, clothes2.ID = clothes2.ID, clothes1.ID
         clothes1.name, clothes2.name = clothes2.name, clothes1.name
         clothes1.details, clothes2.details = clothes2.details, clothes1.details
+        clothes1.is_checked_in, clothes2.is_checked_in = clothes2.is_checked_in, clothes1.is_checked_in
         print("The IDs have been swapped")
     else:
         print("One or both Clothing IDs are invalid.")
@@ -187,6 +188,7 @@ def save_closet(closet, filename):
             out_file.write(f"Clothing Name: {clothes.name}\n")
             for detail in clothes.details:
                 out_file.write(f"- {detail}\n")
+            out_file.write(f"Clothing Status: {clothes.is_checked_in}\n")
     print(f"Closet saved to {filename}")
 # Function to load the closet from a file
 def load_closet(closet, filename):
@@ -209,6 +211,8 @@ def load_closet(closet, filename):
                 clothes.name = line.split(": ")[1]
             elif line.startswith("- "):
                 clothes.details.append(line[2:])
+            elif "Clothing Status:" in line:
+                clothes.is_checked_in = line.split(": ")[1]
 
     if clothes.name:
         closet.append(clothes)
@@ -257,7 +261,8 @@ def check_items(closet, status):
 		if clothing.is_checked_in == status:
 			clothing.print()
 
-def take_a_picture(clothing):
+def take_a_picture(closet):
+    image_name_list = [i.image_name for i in closet]
     while True:
         print("These are all of the image names that are registered so far: ", image_name_list)
         choice = input("Choose which one to take a picture of: ")
@@ -271,7 +276,6 @@ def take_a_picture(clothing):
 
             #Properly stop and release the camera at the end
             picam2.stop()
-            print("It works")
             break
         else:
             print("Image name not found in list. Please try again.")
