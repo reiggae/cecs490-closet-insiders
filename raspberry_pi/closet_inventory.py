@@ -1,5 +1,5 @@
-#from picamera2 import Picamera2
-#from capture_and_process_image import capture_and_process_image
+from picamera2 import Picamera2
+from capture_and_process_image import capture_and_process_image
 from read_card_id import read_card_id
 import os
 
