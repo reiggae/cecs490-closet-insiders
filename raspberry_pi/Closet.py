@@ -22,12 +22,12 @@ def main():
     
     print("Welcome to the Closet Manager")
 
-    #try:
-        #ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
-        #print(f"Connected to card reader on {SERIAL_PORT} at {BAUD_RATE} baud")
-    #except serial.SerialException as e:
-        #print(f"Error opening serial port: {e}")
-        #print("Continuing without card reader...")
+    try:
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        print(f"Connected to card reader on {SERIAL_PORT} at {BAUD_RATE} baud")
+    except serial.SerialException as e:
+        print(f"Error opening serial port: {e}")
+        print("Continuing without card reader...")
 
     while True:
         print("Please choose an option")
