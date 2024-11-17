@@ -1,33 +1,33 @@
-import os
 import serial
-from raspberry_pi.closet_inventory import Clothing
-from raspberry_pi.closet_inventory import input_clothing
-from raspberry_pi.closet_inventory import remove_clothes
-from raspberry_pi.closet_inventory import print_closet
-from raspberry_pi.closet_inventory import update_clothes
-from raspberry_pi.closet_inventory import search_clothes
-from raspberry_pi.closet_inventory import switch_ids
-from raspberry_pi.closet_inventory import save_closet
-from raspberry_pi.closet_inventory import load_closet
-from raspberry_pi.closet_inventory import sort_by_color
-from raspberry_pi.closet_inventory import checking_system
+from closet_inventory import input_clothing
+from closet_inventory import remove_clothes
+from closet_inventory import print_closet
+from closet_inventory import update_clothes
+from closet_inventory import search_clothes
+from closet_inventory import switch_ids
+from closet_inventory import save_closet
+from closet_inventory import load_closet
+from closet_inventory import sort_by_color
+from closet_inventory import checking_system
+from closet_inventory import take_a_picture
 
 
 def main():
     SERIAL_PORT = '/dev/ttyACM0'
     BAUD_RATE = 115200
     ser = None
+    i = 1
 
     closet = []
     
     print("Welcome to the Closet Manager")
 
-    try:
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
-        print(f"Connected to card reader on {SERIAL_PORT} at {BAUD_RATE} baud")
-    except serial.SerialException as e:
-        print(f"Error opening serial port: {e}")
-        print("Continuing without card reader...")
+    #try:
+        #ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        #print(f"Connected to card reader on {SERIAL_PORT} at {BAUD_RATE} baud")
+    #except serial.SerialException as e:
+        #print(f"Error opening serial port: {e}")
+        #print("Continuing without card reader...")
 
     while True:
         print("Please choose an option")
@@ -42,13 +42,15 @@ def main():
         print("9. Sort closet by color")
         print("10. Check in clothing")
         print("11. Check out clothing")
-        print("12. Exit")
-        command = input("Select options from 1 to 12: ")
+        print("12. Take a picture of a clothing")
+        print("13. Exit")
+        command = input("Select options from 1 to 13: ")
         
         if command == "done":
             break
         elif command == "1":
-            closet.append(input_clothing(closet))
+            closet.append(input_clothing(closet, i))
+            i += 1
         elif command == "2":
             remove_clothes(closet)    
         elif command == "3":
@@ -72,6 +74,8 @@ def main():
         elif command == "11":
             checking_system(closet, False)
         elif command == "12":
+            take_a_picture(closet)
+        elif command == "13":
             break
         else:
             print("Invalid command. Select a valid number.")

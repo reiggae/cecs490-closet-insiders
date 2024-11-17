@@ -1,22 +1,24 @@
-from picamera2 import Picamera2, Preview
-from capture_and_process_image import capture_and_process_image
+#from picamera2 import Picamera2
+#from capture_and_process_image import capture_and_process_image
 from read_card_id import read_card_id
 import os
 
 color_order = {"Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Black": 7, "White": 8, "Gray": 9, "Brown": 10}
 # Define a class to hold the clothing details
+image_name_list = []
 class Clothing:
     def __init__(self):
         self.name = ""
+        self.image_name = ""
         self.ID = ""
         self.details = []
         self.is_checked_in = False
 	    
     # Function to print clothing details
     def print(self):
-        print(f"Position Number: {self.position_number}")
         print(f"Clothing ID: {self.ID}")
         print(f"Clothing Name: {self.name}")
+        print(f"Image Name: {self.image_name}") #Will be deleted later, used as a placeholder for now
         print("Tags:")
         for detail in self.details:
             print(f"- {detail}")
@@ -32,10 +34,10 @@ class Clothing:
                 return True
         return False
         
-def input_clothing(closet, ser=None):
+def input_clothing(closet, number, ser=None):
     clothing = Clothing()
     ID_array = [clothes.ID for clothes in closet]
-    
+
     while True:
         if ser:
             print("Please scan the clothing tag or enter the ID manually:")
@@ -53,27 +55,16 @@ def input_clothing(closet, ser=None):
         else:
             ID_array.append(clothing.ID)
             break
-    
-        
-    clothing.name = input("Enter Clothing Name(add .png if you want to take a picture: ")
-    if not clothing.name.endswith(".png"):
-        print("Skipping image capture.")
-    else:
-        picam2 = Picamera2()
-        # Loop until the user is happy with the image
-        while True:
-            # Capture and process the image
-            if capture_and_process_image(picam2, clothing.name):
-                break  # Exit loop if the user is happy
+    clothing.name = input("Enter Clothing Name: ")
 
-        # Properly stop and release the camera at the end
-        picam2.stop()
-    
     while True:
         detail = input("Enter Detail (or type 'done' to finish): ")
         if detail == "done":
             break
         clothing.details.append(detail)
+    
+    clothing.image_name = f"image_{number}.png"
+    image_name_list.append(clothing.image_name)
 
     return clothing
     
@@ -94,13 +85,10 @@ def remove_clothes(closet, ser=None):
     print(f"There are no Clothings with the ID of {chosen_id}")
     
 def print_closet(closet):
-    rack = []
     print("Closet contents:")
     for i, clothing in enumerate(closet):
-        rack.append(i)
         print(f"Clothing {i + 1}:")
         clothing.print()
-    print(f"Rack List: {rack}")
 # Function to update clothing
 def update_clothes(closet, ser=None):
     if ser:
@@ -268,3 +256,22 @@ def check_items(closet, status):
 	for clothing in closet:
 		if clothing.is_checked_in == status:
 			clothing.print()
+
+def take_a_picture(clothing):
+    while True:
+        print("These are all of the image names that are registered so far: ", image_name_list)
+        choice = input("Choose which one to take a picture of: ")
+        if choice in image_name_list:
+            picam2 = Picamera2()
+            #Loop until the user is happy with the image
+            while True:
+                #Capture and process the image
+                if capture_and_process_image(picam2, choice):
+                    break  # Exit loop if the user is happy
+
+            #Properly stop and release the camera at the end
+            picam2.stop()
+            print("It works")
+            break
+        else:
+            print("Image name not found in list. Please try again.")
