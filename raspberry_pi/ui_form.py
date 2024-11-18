@@ -1,0 +1,310 @@
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'form.ui'
+##
+## Created by: Qt User Interface Compiler version 6.8.0
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QLabel,
+    QLineEdit, QPlainTextEdit, QPushButton, QScrollArea,
+    QSizePolicy, QStackedWidget, QWidget)
+
+class Ui_Widget(object):
+    def setupUi(self, Widget):
+        if not Widget.objectName():
+            Widget.setObjectName(u"Widget")
+        Widget.resize(960, 540)
+        self.stackedWidget = QStackedWidget(Widget)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        self.stackedWidget.setGeometry(QRect(0, 0, 960, 540))
+        self.main_page = QWidget()
+        self.main_page.setObjectName(u"main_page")
+        self.lineEdit = QLineEdit(self.main_page)
+        self.lineEdit.setObjectName(u"lineEdit")
+        self.lineEdit.setGeometry(QRect(250, 80, 440, 50))
+        self.label = QLabel(self.main_page)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(380, 20, 251, 41))
+        font = QFont()
+        font.setPointSize(32)
+        self.label.setFont(font)
+        self.scrollArea = QScrollArea(self.main_page)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setGeometry(QRect(250, 140, 500, 300))
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(100)
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+        self.scrollArea.setSizePolicy(sizePolicy)
+        self.scrollArea.setMinimumSize(QSize(0, 300))
+        self.scrollArea.setMaximumSize(QSize(16777215, 16777215))
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 484, 330))
+        self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.pushButton_1 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_1.setObjectName(u"pushButton_1")
+        self.pushButton_1.setMinimumSize(QSize(100, 100))
+        self.pushButton_1.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_1, 0, 0, 1, 1)
+
+        self.pushButton_3 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.pushButton_3.setMinimumSize(QSize(100, 100))
+        self.pushButton_3.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_3, 0, 2, 1, 1)
+
+        self.pushButton_6 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_6.setObjectName(u"pushButton_6")
+        self.pushButton_6.setMinimumSize(QSize(100, 100))
+        self.pushButton_6.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_6, 1, 2, 1, 1)
+
+        self.pushButton_5 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_5.setObjectName(u"pushButton_5")
+        self.pushButton_5.setMinimumSize(QSize(100, 100))
+        self.pushButton_5.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_5, 1, 1, 1, 1)
+
+        self.pushButton_2 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.pushButton_2.setMinimumSize(QSize(100, 100))
+        self.pushButton_2.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_2, 0, 1, 1, 1)
+
+        self.pushButton_4 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_4.setObjectName(u"pushButton_4")
+        self.pushButton_4.setMinimumSize(QSize(100, 100))
+        self.pushButton_4.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_4, 1, 0, 1, 1)
+
+        self.pushButton_7 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_7.setObjectName(u"pushButton_7")
+        self.pushButton_7.setMinimumSize(QSize(100, 100))
+        self.pushButton_7.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_7, 2, 0, 1, 1)
+
+        self.pushButton_8 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_8.setObjectName(u"pushButton_8")
+        self.pushButton_8.setMinimumSize(QSize(100, 100))
+        self.pushButton_8.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_8, 2, 1, 1, 1)
+
+        self.pushButton_9 = QPushButton(self.scrollAreaWidgetContents)
+        self.pushButton_9.setObjectName(u"pushButton_9")
+        self.pushButton_9.setMinimumSize(QSize(100, 100))
+        self.pushButton_9.setMaximumSize(QSize(100, 100))
+
+        self.gridLayout.addWidget(self.pushButton_9, 2, 2, 1, 1)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.searchButton = QPushButton(self.main_page)
+        self.searchButton.setObjectName(u"searchButton")
+        self.searchButton.setGeometry(QRect(700, 80, 50, 50))
+        self.settingsButton = QPushButton(self.main_page)
+        self.settingsButton.setObjectName(u"settingsButton")
+        self.settingsButton.setGeometry(QRect(700, 20, 50, 50))
+        self.powerButton = QPushButton(self.main_page)
+        self.powerButton.setObjectName(u"powerButton")
+        self.powerButton.setGeometry(QRect(250, 20, 50, 50))
+        self.searchButton_2 = QPushButton(self.main_page)
+        self.searchButton_2.setObjectName(u"searchButton_2")
+        self.searchButton_2.setGeometry(QRect(250, 460, 371, 50))
+        self.newItemButton = QPushButton(self.main_page)
+        self.newItemButton.setObjectName(u"newItemButton")
+        self.newItemButton.setGeometry(QRect(640, 460, 111, 50))
+        self.debugPrintButton = QPushButton(self.main_page)
+        self.debugPrintButton.setObjectName(u"debugPrintButton")
+        self.debugPrintButton.setGeometry(QRect(50, 140, 111, 81))
+        self.debugImageButton = QPushButton(self.main_page)
+        self.debugImageButton.setObjectName(u"debugImageButton")
+        self.debugImageButton.setGeometry(QRect(80, 330, 151, 91))
+        self.stackedWidget.addWidget(self.main_page)
+        self.register_page = QWidget()
+        self.register_page.setObjectName(u"register_page")
+        self.label_2 = QLabel(self.register_page)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(270, 20, 441, 41))
+        self.label_2.setFont(font)
+        self.label_3 = QLabel(self.register_page)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setGeometry(QRect(370, 100, 241, 16))
+        self.idInput = QLineEdit(self.register_page)
+        self.idInput.setObjectName(u"idInput")
+        self.idInput.setGeometry(QRect(370, 140, 301, 22))
+        self.nameInput = QLineEdit(self.register_page)
+        self.nameInput.setObjectName(u"nameInput")
+        self.nameInput.setGeometry(QRect(370, 180, 301, 22))
+        self.tagInput = QPlainTextEdit(self.register_page)
+        self.tagInput.setObjectName(u"tagInput")
+        self.tagInput.setGeometry(QRect(370, 320, 301, 70))
+        self.comboBox = QComboBox(self.register_page)
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.setObjectName(u"comboBox")
+        self.comboBox.setGeometry(QRect(370, 290, 191, 22))
+        self.pushButton = QPushButton(self.register_page)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setGeometry(QRect(590, 290, 80, 22))
+        self.imageInput = QLineEdit(self.register_page)
+        self.imageInput.setObjectName(u"imageInput")
+        self.imageInput.setGeometry(QRect(370, 220, 301, 22))
+        self.goBackButton = QPushButton(self.register_page)
+        self.goBackButton.setObjectName(u"goBackButton")
+        self.goBackButton.setGeometry(QRect(370, 430, 80, 22))
+        self.confirmRegisterButton = QPushButton(self.register_page)
+        self.confirmRegisterButton.setObjectName(u"confirmRegisterButton")
+        self.confirmRegisterButton.setGeometry(QRect(590, 430, 80, 22))
+        self.label_5 = QLabel(self.register_page)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setGeometry(QRect(340, 140, 57, 14))
+        self.label_6 = QLabel(self.register_page)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setGeometry(QRect(320, 180, 57, 14))
+        self.label_7 = QLabel(self.register_page)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setGeometry(QRect(320, 220, 57, 14))
+        self.pushButton_10 = QPushButton(self.register_page)
+        self.pushButton_10.setObjectName(u"pushButton_10")
+        self.pushButton_10.setGeometry(QRect(680, 220, 80, 22))
+        self.stackedWidget.addWidget(self.register_page)
+        self.edit_page = QWidget()
+        self.edit_page.setObjectName(u"edit_page")
+        self.label_4 = QLabel(self.edit_page)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setGeometry(QRect(250, 30, 441, 41))
+        self.label_4.setFont(font)
+        self.comboBox_2 = QComboBox(self.edit_page)
+        self.comboBox_2.addItem("")
+        self.comboBox_2.addItem("")
+        self.comboBox_2.setObjectName(u"comboBox_2")
+        self.comboBox_2.setGeometry(QRect(290, 280, 191, 22))
+        self.label_9 = QLabel(self.edit_page)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setGeometry(QRect(240, 210, 57, 14))
+        self.pushButton_12 = QPushButton(self.edit_page)
+        self.pushButton_12.setObjectName(u"pushButton_12")
+        self.pushButton_12.setGeometry(QRect(600, 210, 80, 22))
+        self.idInput_2 = QLineEdit(self.edit_page)
+        self.idInput_2.setObjectName(u"idInput_2")
+        self.idInput_2.setGeometry(QRect(290, 130, 301, 22))
+        self.tagInput_2 = QPlainTextEdit(self.edit_page)
+        self.tagInput_2.setObjectName(u"tagInput_2")
+        self.tagInput_2.setGeometry(QRect(290, 310, 301, 70))
+        self.pushButton_11 = QPushButton(self.edit_page)
+        self.pushButton_11.setObjectName(u"pushButton_11")
+        self.pushButton_11.setGeometry(QRect(510, 280, 80, 22))
+        self.label_8 = QLabel(self.edit_page)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setGeometry(QRect(240, 170, 57, 14))
+        self.goBackButton_2 = QPushButton(self.edit_page)
+        self.goBackButton_2.setObjectName(u"goBackButton_2")
+        self.goBackButton_2.setGeometry(QRect(290, 420, 80, 22))
+        self.label_10 = QLabel(self.edit_page)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setGeometry(QRect(260, 130, 57, 14))
+        self.confirmRegisterButton_2 = QPushButton(self.edit_page)
+        self.confirmRegisterButton_2.setObjectName(u"confirmRegisterButton_2")
+        self.confirmRegisterButton_2.setGeometry(QRect(510, 420, 80, 22))
+        self.nameInput_2 = QLineEdit(self.edit_page)
+        self.nameInput_2.setObjectName(u"nameInput_2")
+        self.nameInput_2.setGeometry(QRect(290, 170, 301, 22))
+        self.imageInput_2 = QLineEdit(self.edit_page)
+        self.imageInput_2.setObjectName(u"imageInput_2")
+        self.imageInput_2.setGeometry(QRect(290, 210, 301, 22))
+        self.stackedWidget.addWidget(self.edit_page)
+
+        self.retranslateUi(Widget)
+
+        self.stackedWidget.setCurrentIndex(0)
+
+
+        QMetaObject.connectSlotsByName(Widget)
+    # setupUi
+
+    def retranslateUi(self, Widget):
+        Widget.setWindowTitle(QCoreApplication.translate("Widget", u"Widget", None))
+        self.lineEdit.setText(QCoreApplication.translate("Widget", u"type to search...", None))
+        self.label.setText(QCoreApplication.translate("Widget", u"INVENTORY", None))
+        self.pushButton_1.setText(QCoreApplication.translate("Widget", u"1", None))
+        self.pushButton_3.setText(QCoreApplication.translate("Widget", u"3", None))
+        self.pushButton_6.setText(QCoreApplication.translate("Widget", u"6", None))
+        self.pushButton_5.setText(QCoreApplication.translate("Widget", u"5", None))
+        self.pushButton_2.setText(QCoreApplication.translate("Widget", u"2", None))
+        self.pushButton_4.setText(QCoreApplication.translate("Widget", u"4", None))
+        self.pushButton_7.setText(QCoreApplication.translate("Widget", u"7", None))
+        self.pushButton_8.setText(QCoreApplication.translate("Widget", u"8", None))
+        self.pushButton_9.setText(QCoreApplication.translate("Widget", u"9", None))
+        self.searchButton.setText(QCoreApplication.translate("Widget", u"Search\n"
+"(wip)", None))
+        self.settingsButton.setText(QCoreApplication.translate("Widget", u"Settings\n"
+"(wip)", None))
+        self.powerButton.setText(QCoreApplication.translate("Widget", u"Power\n"
+"(wip)", None))
+        self.searchButton_2.setText(QCoreApplication.translate("Widget", u"Outfit Selection (wip)", None))
+        self.newItemButton.setText(QCoreApplication.translate("Widget", u"Add Item", None))
+        self.debugPrintButton.setText(QCoreApplication.translate("Widget", u"DEBUG\n"
+"Print Closet", None))
+        self.debugImageButton.setText(QCoreApplication.translate("Widget", u"DEBUG\n"
+"Take Image", None))
+        self.label_2.setText(QCoreApplication.translate("Widget", u"REGISTER NEW ITEM", None))
+        self.label_3.setText(QCoreApplication.translate("Widget", u"RFID tag undetected... (wip)", None))
+        self.idInput.setText("")
+        self.nameInput.setText("")
+        self.tagInput.setPlainText(QCoreApplication.translate("Widget", u"tag 1\n"
+"tag 2\n"
+"tag 3\n"
+"tag 4", None))
+        self.comboBox.setItemText(0, QCoreApplication.translate("Widget", u"prexisting tag 1", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("Widget", u"prexisting tag 2", None))
+
+        self.pushButton.setText(QCoreApplication.translate("Widget", u"Add tag", None))
+        self.imageInput.setText("")
+        self.goBackButton.setText(QCoreApplication.translate("Widget", u"Go Back", None))
+        self.confirmRegisterButton.setText(QCoreApplication.translate("Widget", u"Confirm", None))
+        self.label_5.setText(QCoreApplication.translate("Widget", u"ID:", None))
+        self.label_6.setText(QCoreApplication.translate("Widget", u"Name:", None))
+        self.label_7.setText(QCoreApplication.translate("Widget", u"Image:", None))
+        self.pushButton_10.setText(QCoreApplication.translate("Widget", u"Take Image", None))
+        self.label_4.setText(QCoreApplication.translate("Widget", u"Edit Item", None))
+        self.comboBox_2.setItemText(0, QCoreApplication.translate("Widget", u"prexisting tag 1", None))
+        self.comboBox_2.setItemText(1, QCoreApplication.translate("Widget", u"prexisting tag 2", None))
+
+        self.label_9.setText(QCoreApplication.translate("Widget", u"Image:", None))
+        self.pushButton_12.setText(QCoreApplication.translate("Widget", u"Take Image", None))
+        self.idInput_2.setText("")
+        self.tagInput_2.setPlainText(QCoreApplication.translate("Widget", u"tag 1\n"
+"tag 2\n"
+"tag 3\n"
+"tag 4", None))
+        self.pushButton_11.setText(QCoreApplication.translate("Widget", u"Add tag", None))
+        self.label_8.setText(QCoreApplication.translate("Widget", u"Name:", None))
+        self.goBackButton_2.setText(QCoreApplication.translate("Widget", u"Go Back", None))
+        self.label_10.setText(QCoreApplication.translate("Widget", u"ID:", None))
+        self.confirmRegisterButton_2.setText(QCoreApplication.translate("Widget", u"Apply", None))
+        self.nameInput_2.setText("")
+        self.imageInput_2.setText("")
+    # retranslateUi
+
