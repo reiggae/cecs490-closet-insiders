@@ -8,10 +8,16 @@ from save_closet import save_closet
 from load_closet import load_closet
 from sort_by_color import sort_by_color
 from checking_system import checking_system
+from outfits import create_outfit
+from outfits import add_clothing_to_outfit
+from outfits import print_outfits
+
 
 def main():
-    # Create a list to store the Clothings
+    i = 1
+
     closet = []
+    outfits = []
     
     print("Welcome to the Closet Manager")
 
@@ -28,13 +34,18 @@ def main():
         print("9. Sort closet by color")
         print("10. Check in clothing")
         print("11. Check out clothing")
-        print("12. Exit")
-        command = input("Select options from 1 to 12: ")
+        print("12. Take a picture of a clothing")
+        print("13. Add an outfit")
+        print("14. Add clothing items to an outfit")
+        print("15. Print all outfits")
+        print("16. Exit")
+        command = input("Select options from 1 to 16: ")
         
         if command == "done":
             break
         elif command == "1":
-            closet.append(input_clothing(closet))
+            closet.append(input_clothing(closet, i))
+            i += 1
         elif command == "2":
             remove_clothes(closet)    
         elif command == "3":
@@ -58,9 +69,32 @@ def main():
         elif command == "11":
             checking_system(closet, False)
         elif command == "12":
+            print("Camera not available")
+        elif command == "13":
+            outfit_name = input("Enter the name of the new outfit: ")
+            create_outfit(outfits, outfit_name)
+        elif command == "14":
+           if not outfits:
+            print("No outfits registered yet. Please create an outfit first.")
+           else:
+            print("Registered outfits: ")
+            for index, outfit in enumerate(outfits, 1):
+                print(f"{index}. {outfit.outfit_name}")
+            outfit_name = input("Choose which outfit to add clothes too: ")
+            chosen_id = input("Enter the Clothing ID that you want to add: ")
+            clothing_type = input("Enter the type of clothing (Shirt, Pants, etc.): ")
+            clothing_item = next((c for c in closet if c.ID == chosen_id), None)
+            if clothing_item:
+                add_clothing_to_outfit(outfits, outfit_name, clothing_type, clothing_item)
+            else:
+                print(f"No clothing item found with ID {chosen_id}")
+        elif command == "15":
+            print_outfits(outfits)
+        elif command == "16":
             break
         else:
             print("Invalid command. Select a valid number.")
+    print("\nExiting program.")
 
 if __name__ == "__main__":
     main()

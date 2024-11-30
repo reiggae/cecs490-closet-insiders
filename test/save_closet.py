@@ -6,4 +6,5 @@ def save_closet(closet, filename):
             out_file.write(f"Clothing Name: {clothes.name}\n")
             for detail in clothes.details:
                 out_file.write(f"- {detail}\n")
+
     print(f"Closet saved to {filename}")

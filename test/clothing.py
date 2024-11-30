@@ -2,14 +2,16 @@
 class Clothing:
     def __init__(self):
         self.name = ""
+        self.image_name = ""
         self.ID = ""
         self.details = []
         self.is_checked_in = False
-
+	    
     # Function to print clothing details
     def print(self):
         print(f"Clothing ID: {self.ID}")
         print(f"Clothing Name: {self.name}")
+        print(f"Image Name: {self.image_name}") #Will be deleted later, used as a placeholder for now
         print("Tags:")
         for detail in self.details:
             print(f"- {detail}")

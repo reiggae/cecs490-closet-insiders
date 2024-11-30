@@ -10,6 +10,10 @@ from closet_inventory import load_closet
 from closet_inventory import sort_by_color
 from closet_inventory import checking_system
 from closet_inventory import take_a_picture
+from closet_inventory import create_outfit
+from closet_inventory import add_clothing_to_outfit
+from closet_inventory import print_outfits
+from read_card_id import read_card_id
 
 
 def main():
@@ -19,6 +23,7 @@ def main():
     i = 1
 
     closet = []
+    outfits = []
     
     print("Welcome to the Closet Manager")
 
@@ -43,8 +48,11 @@ def main():
         print("10. Check in clothing")
         print("11. Check out clothing")
         print("12. Take a picture of a clothing")
-        print("13. Exit")
-        command = input("Select options from 1 to 13: ")
+        print("13. Add an outfit")
+        print("14. Add clothing items to an outfit")
+        print("15. Print all outfits")
+        print("16. Exit")
+        command = input("Select options from 1 to 16: ")
         
         if command == "done":
             break
@@ -76,6 +84,27 @@ def main():
         elif command == "12":
             take_a_picture(closet)
         elif command == "13":
+            outfit_name = input("Enter the name of the new outfit: ")
+            create_outfit(outfits, outfit_name)
+        elif command == "14":
+            print("These are all of the outfits that are registered so far: ", outfits)
+            outfit_name = input("Choose which outfit to add clothes too: ")
+            if ser:
+                print("Please scan the clothing tag or enter the ID manually:")
+                chosen_id = read_card_id(ser)
+                if not chosen_id:
+                    chosen_id = input("Enter the Clothing ID that you want to add: ")
+            else:
+                chosen_id = input("Enter the Clothing ID that you want to add: ")
+            clothing_type = input("Enter the type of clothing (Shirt, Pants, etc.): ")
+            clothing_item = next((c for c in closet if c.ID == chosen_id), None)
+            if clothing_item:
+                add_clothing_to_outfit(outfits, outfit_name, clothing_type, clothing_item)
+            else:
+                print(f"No clothing item found with ID {chosen_id}")
+        elif command == "15":
+            print_outfits(outfits)
+        elif command == "16":
             break
         else:
             print("Invalid command. Select a valid number.")
