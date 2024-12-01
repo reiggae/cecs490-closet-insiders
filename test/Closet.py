@@ -58,10 +58,10 @@ def main():
             switch_ids(closet)
         elif command == "7":
             filename = input("Enter file name to save to: ")
-            save_closet(closet, filename)
+            save_closet(closet, outfits, filename)
         elif command == "8":
             filename = input("Enter file name to load from: ")
-            load_closet(closet, filename)
+            load_closet(closet, outfits, filename)
         elif command == "9":
             sort_by_color(closet)
         elif command == "10":

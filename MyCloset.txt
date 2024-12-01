@@ -1,0 +1,32 @@
+CLOTHING ITEMS:
+Clothing ID: 100
+Clothing Name: Tank Top
+- White
+- Large
+Clothing Status: False
+
+Clothing ID: 200
+Clothing Name: Shorts #1
+- Gym
+- Medium
+- Nike
+Clothing Status: False
+
+OUTFITS:
+Outfit Name: Workout
+Outfit Item Type: Pants
+Clothing ID: 100
+Clothing Name: Tank Top
+- White
+- Large
+Clothing Status: False
+
+Outfit Item Type: Shirt
+Clothing ID: 200
+Clothing Name: Shorts #1
+- Gym
+- Medium
+- Nike
+Clothing Status: False
+
+

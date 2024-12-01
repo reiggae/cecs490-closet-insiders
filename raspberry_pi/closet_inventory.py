@@ -199,45 +199,91 @@ def switch_ids(closet, ser=None):
         clothes1.name, clothes2.name = clothes2.name, clothes1.name
         clothes1.details, clothes2.details = clothes2.details, clothes1.details
         clothes1.is_checked_in, clothes2.is_checked_in = clothes2.is_checked_in, clothes1.is_checked_in
+        clothes1.image_name, clothes2.image_name = clothes2.image_name, clothes1.image_name
         print("The IDs have been swapped")
     else:
         print("One or both Clothing IDs are invalid.")
-# Function to save the closet to a file
-def save_closet(closet, filename):
+# Function to save the closet and outfits to a file
+def save_closet(closet, outfits, filename):
     with open(filename, 'w') as out_file:
+        # Save clothing items
+        out_file.write("CLOTHING ITEMS:\n")
         for clothes in closet:
             out_file.write(f"Clothing ID: {clothes.ID}\n")
             out_file.write(f"Clothing Name: {clothes.name}\n")
             for detail in clothes.details:
                 out_file.write(f"- {detail}\n")
-            out_file.write(f"Clothing Status: {clothes.is_checked_in}\n")
-    print(f"Closet saved to {filename}")
+            out_file.write(f"Checked in Status: {clothes.is_checked_in}\n")
+            out_file.write("\n")  # Add a blank line between clothing items
+        
+        # Save outfits
+        out_file.write("OUTFITS:\n")
+        for outfit in outfits:
+            out_file.write(f"Outfit Name: {outfit.outfit_name}\n")
+            for clothing_type, clothing_item in outfit.clothing_items.items():
+                out_file.write(f"Outfit Item Type: {clothing_type}\n")
+                out_file.write(f"Clothing ID: {clothing_item.ID}\n")
+                out_file.write(f"Clothing Name: {clothing_item.name}\n")
+                for detail in clothing_item.details:
+                    out_file.write(f"- {detail}\n")
+                out_file.write(f"Checked in Status: {clothing_item.is_checked_in}\n")
+                out_file.write("\n")  
+            out_file.write("\n")  
+
+    print(f"Closet and outfits saved to {filename}")
 # Function to load the closet from a file
-def load_closet(closet, filename):
+def load_closet(closet, outfits, filename):
     if not os.path.isfile(filename):
         print("Error opening file for loading!")
         return
 
     closet.clear()
-    clothes = Clothing()
+    outfits.clear()
+    current_section = None
+    current_outfit = None
+    current_clothing = None
+    current_clothing_type = None
 
     with open(filename, 'r') as in_file:
         for line in in_file:
             line = line.strip()
-            if "Clothing ID:" in line:
-                if clothes.name:
-                    closet.append(clothes)
-                clothes = Clothing()
-                clothes.ID = line.split(": ")[1]
-            elif "Clothing Name:" in line:
-                clothes.name = line.split(": ")[1]
+            if line == "CLOTHING ITEMS:":
+                current_section = "clothing"
+            elif line == "OUTFITS:":
+                current_section = "outfits"
+            elif line.startswith("Clothing ID:"):
+                if current_clothing and current_section == "clothing":
+                    closet.append(current_clothing)
+                current_clothing = Clothing()
+                current_clothing.ID = line.split(": ")[1]
+            elif line.startswith("Clothing Name:"):
+                current_clothing.name = line.split(": ")[1]
             elif line.startswith("- "):
-                clothes.details.append(line[2:])
-            elif "Clothing Status:" in line:
-                clothes.is_checked_in = line.split(": ")[1]
+                if current_clothing:
+                    current_clothing.details.append(line[2:])
+            elif line.startswith("Clothing Status:"):
+                if current_clothing:
+                    current_clothing.is_checked_in = line.split(": ")[1].lower() == "true"
+            elif line.startswith("Outfit Name:"):
+                if current_outfit:
+                    outfits.append(current_outfit)
+                current_outfit = Outfit(line.split(": ")[1])
+            elif line.startswith("Outfit Item Type:"):
+                current_clothing_type = line.split(": ")[1]
 
-    if clothes.name:
-        closet.append(clothes)
+            if current_section == "outfits" and current_clothing and current_outfit and current_clothing_type:
+                current_outfit.add_clothing_item(current_clothing_type, current_clothing)
+                current_clothing = None
+                current_clothing_type = None
+
+    # Add the last clothing item if in clothing section
+    if current_section == "clothing" and current_clothing:
+        closet.append(current_clothing)
+    # Add the last outfit
+    if current_outfit:
+        outfits.append(current_outfit)
+
+    print(f"Closet and outfits loaded from {filename}")
 
     print(f"Closet loaded from {filename}")
 
