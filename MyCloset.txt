@@ -1,32 +1,49 @@
 CLOTHING ITEMS:
-Clothing ID: 100
-Clothing Name: Tank Top
-- White
-- Large
-Clothing Status: False
+Clothing ID: 1
+Clothing Name: Shirt #1
+Image Name: image_1.png
+Checked in Status: True
+Clothing on Hanger: False
 
-Clothing ID: 200
+Clothing ID: 2
+Clothing Name: Shirt #2
+Image Name: image_2.png
+Checked in Status: False
+Clothing on Hanger: True
+
+Clothing ID: 3
 Clothing Name: Shorts #1
-- Gym
-- Medium
-- Nike
-Clothing Status: False
+Image Name: image_3.png
+Checked in Status: False
+Clothing on Hanger: False
+
+Clothing ID: 4
+Clothing Name: Shorts #2
+Image Name: image_4.png
+Checked in Status: True
+Clothing on Hanger: True
+
+Clothing ID: 5
+Clothing Name: Shirt #3
+Image Name: image_5.png
+Checked in Status: False
+Clothing on Hanger: True
 
 OUTFITS:
-Outfit Name: Workout
-Outfit Item Type: Pants
-Clothing ID: 100
-Clothing Name: Tank Top
-- White
-- Large
-Clothing Status: False
+Outfit Name: School
+Outfit Item Type: Top
+Clothing ID: 6
+Clothing Name: Shorts #3
+Image Name: image_5.png
+Checked in Status: True
+Clothing on Hanger: True
 
-Outfit Item Type: Shirt
-Clothing ID: 200
-Clothing Name: Shorts #1
-- Gym
-- Medium
-- Nike
-Clothing Status: False
+Outfit Item Type: Bottom
+Clothing ID: 1
+Clothing Name: Shirt #1
+Image Name: image_5.png
+Checked in Status: True
+Clothing on Hanger: True
 
 
+Current image count: 6

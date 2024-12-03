@@ -31,6 +31,9 @@ def switch_ids(closet, ser=None):
         clothes1.ID, clothes2.ID = clothes2.ID, clothes1.ID
         clothes1.name, clothes2.name = clothes2.name, clothes1.name
         clothes1.details, clothes2.details = clothes2.details, clothes1.details
+        clothes1.is_checked_in, clothes2.is_checked_in = clothes2.is_checked_in, clothes1.is_checked_in
+        clothes1.has_hanger, clothes2.has_hanger = clothes2.has_hanger, clothes1.has_hanger
+        clothes1.image_name, clothes2.image_name = clothes2.image_name, clothes1.image_name
         print("The IDs have been swapped")
     else:
         print("One or both Clothing IDs are invalid.")

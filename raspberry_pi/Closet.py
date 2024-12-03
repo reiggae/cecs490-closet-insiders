@@ -13,6 +13,8 @@ from closet_inventory import take_a_picture
 from closet_inventory import create_outfit
 from closet_inventory import add_clothing_to_outfit
 from closet_inventory import print_outfits
+from closet_inventory import hanger_system
+from closet_inventory import map_clothes_to_leds
 from read_card_id import read_card_id
 
 
@@ -24,6 +26,7 @@ def main():
 
     closet = []
     outfits = []
+    clothing_types = ["Top", "Middle", "Bottom"]
     
     print("Welcome to the Closet Manager")
 
@@ -51,8 +54,11 @@ def main():
         print("13. Add an outfit")
         print("14. Add clothing items to an outfit")
         print("15. Print all outfits")
-        print("16. Exit")
-        command = input("Select options from 1 to 16: ")
+        print("16. Add clothing to a hanger")
+        print("17. Take out clothing from a hanger")
+        print("18. Assign hangers to LEDs")
+        print("19. Exit")
+        command = input("Select options from 1 to 19: ")
         
         if command == "done":
             break
@@ -87,7 +93,12 @@ def main():
             outfit_name = input("Enter the name of the new outfit: ")
             create_outfit(outfits, outfit_name)
         elif command == "14":
-            print("These are all of the outfits that are registered so far: ", outfits)
+            if not outfits:
+                print("No outfits registered yet. Please create an outfit first.")
+            else:
+                print("Registered outfits: ")
+                for index, outfit in enumerate(outfits, 1):
+                    print(f"{index}. {outfit.outfit_name}")
             outfit_name = input("Choose which outfit to add clothes too: ")
             if ser:
                 print("Please scan the clothing tag or enter the ID manually:")
@@ -96,15 +107,29 @@ def main():
                     chosen_id = input("Enter the Clothing ID that you want to add: ")
             else:
                 chosen_id = input("Enter the Clothing ID that you want to add: ")
-            clothing_type = input("Enter the type of clothing (Shirt, Pants, etc.): ")
+            clothing_type = input("Enter the type of clothing (Top, Middle, Bottom): ")
             clothing_item = next((c for c in closet if c.ID == chosen_id), None)
             if clothing_item:
-                add_clothing_to_outfit(outfits, outfit_name, clothing_type, clothing_item)
+                if any(x in clothing_type for x in clothing_types):
+                    add_clothing_to_outfit(outfits, outfit_name, clothing_type, clothing_item)
+                else:
+                    print("Invalid clothing type")
             else:
                 print(f"No clothing item found with ID {chosen_id}")
         elif command == "15":
             print_outfits(outfits)
         elif command == "16":
+            hanger_system(closet, True)
+        elif command == "17":
+            hanger_system(closet, False)
+        elif command == "18":
+            hanger_count = 0
+            for clothing in closet:
+                if clothing.has_hanger == True:
+                    hanger_count += 1
+            led_count = int(input("How many LEDs are available? "))
+            map_clothes_to_leds(hanger_count, led_count)        
+        elif command == "19":
             break
         else:
             print("Invalid command. Select a valid number.")

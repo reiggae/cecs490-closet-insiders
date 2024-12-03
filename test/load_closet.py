@@ -14,6 +14,7 @@ def load_closet(closet, outfits, filename):
     current_outfit = None
     current_clothing = None
     current_clothing_type = None
+    current_image_count = 0
 
     with open(filename, 'r') as in_file:
         for line in in_file:
@@ -32,15 +33,22 @@ def load_closet(closet, outfits, filename):
             elif line.startswith("- "):
                 if current_clothing:
                     current_clothing.details.append(line[2:])
-            elif line.startswith("Clothing Status:"):
+            elif line.startswith("Image Name:"):
+                current_clothing.image_name = line.split(": ")[1]
+            elif line.startswith("Checked in Status:"):
                 if current_clothing:
                     current_clothing.is_checked_in = line.split(": ")[1].lower() == "true"
+            elif line.startswith("Clothing on Hanger:"):
+                if current_clothing:
+                    current_clothing.has_hanger = line.split(": ")[1].lower() == "true"
             elif line.startswith("Outfit Name:"):
                 if current_outfit:
                     outfits.append(current_outfit)
                 current_outfit = Outfit(line.split(": ")[1])
             elif line.startswith("Outfit Item Type:"):
                 current_clothing_type = line.split(": ")[1]
+            elif line.startswith("Current image count:"):
+                current_image_count = int(line.split(": ")[1])
 
             if current_section == "outfits" and current_clothing and current_outfit and current_clothing_type:
                 current_outfit.add_clothing_item(current_clothing_type, current_clothing)
@@ -55,3 +63,4 @@ def load_closet(closet, outfits, filename):
         outfits.append(current_outfit)
 
     print(f"Closet and outfits loaded from {filename}")
+    return current_image_count

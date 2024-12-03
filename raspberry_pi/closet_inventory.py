@@ -13,6 +13,7 @@ class Clothing:
         self.ID = ""
         self.details = []
         self.is_checked_in = False
+        self.has_hanger = False
 	    
     # Function to print clothing details
     def print(self):
@@ -23,6 +24,7 @@ class Clothing:
         for detail in self.details:
             print(f"- {detail}")
         print(f"Status: {'checked in' if self.is_checked_in else 'checked out'}")
+        print(f"It is {'' if self.has_hanger else 'not'} on a hanger")
         print()
 
     # Function to check if any detail contains the search term
@@ -200,11 +202,12 @@ def switch_ids(closet, ser=None):
         clothes1.details, clothes2.details = clothes2.details, clothes1.details
         clothes1.is_checked_in, clothes2.is_checked_in = clothes2.is_checked_in, clothes1.is_checked_in
         clothes1.image_name, clothes2.image_name = clothes2.image_name, clothes1.image_name
+        clothes1.has_hanger, clothes2.has_hanger = clothes2.has_hanger, clothes1.has_hanger
         print("The IDs have been swapped")
     else:
         print("One or both Clothing IDs are invalid.")
 # Function to save the closet and outfits to a file
-def save_closet(closet, outfits, filename):
+def save_closet(closet, outfits, number, filename):
     with open(filename, 'w') as out_file:
         # Save clothing items
         out_file.write("CLOTHING ITEMS:\n")
@@ -213,8 +216,10 @@ def save_closet(closet, outfits, filename):
             out_file.write(f"Clothing Name: {clothes.name}\n")
             for detail in clothes.details:
                 out_file.write(f"- {detail}\n")
+            out_file.write(f"Image Name: {clothes.image_name}\n")
             out_file.write(f"Checked in Status: {clothes.is_checked_in}\n")
-            out_file.write("\n")  # Add a blank line between clothing items
+            out_file.write(f"Clothing on Hanger: {clothes.has_hanger}\n")
+            out_file.write("\n")
         
         # Save outfits
         out_file.write("OUTFITS:\n")
@@ -226,10 +231,12 @@ def save_closet(closet, outfits, filename):
                 out_file.write(f"Clothing Name: {clothing_item.name}\n")
                 for detail in clothing_item.details:
                     out_file.write(f"- {detail}\n")
+                out_file.write(f"Image Name: {clothes.image_name}\n")
                 out_file.write(f"Checked in Status: {clothing_item.is_checked_in}\n")
+                out_file.write(f"Clothing on Hanger: {clothes.has_hanger}\n")
                 out_file.write("\n")  
             out_file.write("\n")  
-
+        out_file.write(f"Current image count: {number}")
     print(f"Closet and outfits saved to {filename}")
 # Function to load the closet from a file
 def load_closet(closet, outfits, filename):
@@ -243,6 +250,7 @@ def load_closet(closet, outfits, filename):
     current_outfit = None
     current_clothing = None
     current_clothing_type = None
+    current_image_count = 0
 
     with open(filename, 'r') as in_file:
         for line in in_file:
@@ -261,15 +269,22 @@ def load_closet(closet, outfits, filename):
             elif line.startswith("- "):
                 if current_clothing:
                     current_clothing.details.append(line[2:])
-            elif line.startswith("Clothing Status:"):
+            elif line.startswith("Image Name:"):
+                current_clothing.image_name = line.split(": ")[1]
+            elif line.startswith("Checked in Status:"):
                 if current_clothing:
                     current_clothing.is_checked_in = line.split(": ")[1].lower() == "true"
+            elif line.startswith("Clothing on Hanger:"):
+                if current_clothing:
+                    current_clothing.has_hanger = line.split(": ")[1].lower() == "true"
             elif line.startswith("Outfit Name:"):
                 if current_outfit:
                     outfits.append(current_outfit)
                 current_outfit = Outfit(line.split(": ")[1])
             elif line.startswith("Outfit Item Type:"):
                 current_clothing_type = line.split(": ")[1]
+            elif line.startswith("Current image count:"):
+                current_image_count = int(line.split(": ")[1])
 
             if current_section == "outfits" and current_clothing and current_outfit and current_clothing_type:
                 current_outfit.add_clothing_item(current_clothing_type, current_clothing)
@@ -284,8 +299,7 @@ def load_closet(closet, outfits, filename):
         outfits.append(current_outfit)
 
     print(f"Closet and outfits loaded from {filename}")
-
-    print(f"Closet loaded from {filename}")
+    return current_image_count
 
 def get_color_from_detail(details):
     for detail in details:
@@ -363,3 +377,29 @@ def add_clothing_to_outfit(outfits, outfit_name, clothing_type, clothing_item):
 def print_outfits(outfits):
     for outfit in outfits:
         outfit.print_outfit()
+        
+def hanger_system(closet, status):
+    chosen_id = input(f"Enter the Clothing ID that you want to {'add to ' if status else 'take out from '} a hanger: ")
+
+    for clothing in closet:
+        if clothing.ID == chosen_id:
+            clothing.has_hanger = status
+            print(f"Clothing ID: {chosen_id} has been {'added' if status else 'taken out'}.")
+            return
+    print(f"Clothing with ID {chosen_id} not found.")
+
+def map_clothes_to_leds(num_clothes, num_leds):
+    # Mapping from clothes to LEDs
+    constant = num_clothes / num_leds
+    clothes_to_leds = {}
+    leds_to_clothes = {i: [] for i in range(1, num_leds + 1)}
+
+    for i in range(num_clothes):
+        # Assigning each cloth to an LED
+        led_index = (i // constant) % num_leds + 1  # First two clothes share LED 1, next two LED 2, etc.
+        clothes_to_leds[i + 1] = led_index
+        leds_to_clothes[led_index].append(i + 1)
+    
+    return clothes_to_leds
+
+

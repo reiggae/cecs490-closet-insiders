@@ -6,6 +6,7 @@ class Clothing:
         self.ID = ""
         self.details = []
         self.is_checked_in = False
+        self.has_hanger = False
 	    
     # Function to print clothing details
     def print(self):
@@ -16,6 +17,7 @@ class Clothing:
         for detail in self.details:
             print(f"- {detail}")
         print(f"Status: {'checked in' if self.is_checked_in else 'checked out'}")
+        print(f"It is {'' if self.has_hanger else 'not '}on a hanger")
         print()
 
     # Function to check if any detail contains the search term
