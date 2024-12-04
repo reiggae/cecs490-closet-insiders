@@ -1,5 +1,5 @@
 from picamera2 import Picamera2
-from capture_and_process_image import capture_and_process_image
+#from capture_and_process_image import capture_and_process_image
 from read_card_id import read_card_id
 import os
 
@@ -34,7 +34,7 @@ class Clothing:
                 return True
         return False
         
-def input_clothing(closet, number, ser=None):
+def input_clothing(closet, manual_id = "123", manual_name = "None", manual_image = "0", ser=None):
     clothing = Clothing()
     ID_array = [clothes.ID for clothes in closet]
 
@@ -46,24 +46,25 @@ def input_clothing(closet, number, ser=None):
                 clothing.ID = card_id
                 print(f"Clothing ID scanned: {clothing.ID}")
             else:
-                clothing.ID = input("Enter Clothing ID manually: ")
+                clothing.ID = manual_id #input("Enter Clothing ID manually: ")
         else:
-            clothing.ID = input("Enter Clothing ID: ")
+            clothing.ID = manual_id #input("Enter Clothing ID: ")
                 
         if clothing.ID in ID_array:
             print("Tag is already registered. Use another tag. ")
         else:
             ID_array.append(clothing.ID)
             break
-    clothing.name = input("Enter Clothing Name: ")
+    clothing.name = manual_name
 
     while True:
-        detail = input("Enter Detail (or type 'done' to finish): ")
+        detail = "done" #input("Enter Detail (or type 'done' to finish): ")
         if detail == "done":
             break
         clothing.details.append(detail)
     
-    clothing.image_name = f"image_{number}.png"
+    #clothing.image_name = f"image_{number}.png"
+    clothing.image_name = manual_image
     image_name_list.append(clothing.image_name)
 
     return clothing
