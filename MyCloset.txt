@@ -29,6 +29,18 @@ Image Name: image_5.png
 Checked in Status: False
 Clothing on Hanger: True
 
+Clothing ID: 6
+Clothing Name: Shorts #3
+Image Name: image_6.png
+Checked in Status: False
+Clothing on Hanger: True
+
+Clothing ID: 7
+Clothing Name: Shirt #4
+Image Name: image_7.png
+Checked in Status: True
+Clothing on Hanger: True
+
 OUTFITS:
 Outfit Name: School
 Outfit Item Type: Top
