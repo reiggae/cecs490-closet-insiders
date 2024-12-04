@@ -15,18 +15,26 @@ def debug_function():
     print_closet(closet)
 
 def generate_item_buttons():
+    # deletes existing item buttons
     for i in reversed(range(main_page.main_scroll_layout.count())):
         main_page.main_scroll_layout.itemAt(i).widget().setParent(None)
 
+    main_page.search_bar.text()
+
     for i in range(len(closet)):
+        #ANDREW TODO does item match filter text? true:
         newButton = QPushButton()
         newButton.clicked.connect(lambda state, item = closet[i]: setup_edit_page(item))
         newButton.setStyleSheet("border-image : url({});".format(closet[i].image_name))
         newButton.setMinimumSize(100,100)
         newButton.setMaximumSize(100,100)
+        #ANDREW TODO replace "i" here with valid count or whatever
         main_page.main_scroll_layout.addWidget(newButton, i//3, i%3, alignment=Qt.AlignTop)
 
+
+
 def setup_edit_page(item):
+    #TODO Make edit page
     print(item.ID)
     print(item.name)
 
@@ -36,6 +44,8 @@ def go_main_page():
 
 def go_register_page():
     stacked_widget.setCurrentIndex(1)
+
+def go_edit_page():
 
 def go_camera_page():
     stacked_widget.setCurrentIndex(2)
@@ -53,6 +63,8 @@ class main_page(QWidget):
 
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Search Bar")
+
+        self.search_button = QPushButton("Search")
 
         self.main_scroll = QScrollArea()
         self.scroll_area_contents = QWidget()
@@ -76,13 +88,16 @@ class main_page(QWidget):
         self.main_scroll.setWidget(self.scroll_area_contents)
 
         self.register_button = QPushButton("Register New Item")
-        self.register_button.clicked.connect(go_register_page)
 
         # Initialize main page layout
         self.layout.addWidget(self.inventory_label, alignment = Qt.AlignTop|Qt.AlignCenter)
         self.layout.addWidget(self.search_bar)
+        self.layout.addWidget(self.search_button)
         self.layout.addWidget(self.main_scroll)
         self.layout.addWidget(self.register_button)
+
+        self.register_button.clicked.connect(go_register_page)
+        self.search_button.clicked.connect(generate_item_buttons)
 
         #DEBUG
         self.debug_button = QPushButton("DEBUG")
@@ -139,13 +154,26 @@ class register_page(QWidget):
     def register_clothing(self):
         id = self.id_input.text()
         name = self.name_input.text()
-        image = "test.jpg" #TODO, automatic image name scheme
-        #tag = widget.ui.tagInput.plainText()
 
-        closet.append(input_clothing(closet, id, name, image))
 
-        #reset_register_page() #TODO
-        go_main_page()
+        image = "test.jpg" #ANDREW TODO, automatic image name scheme
+        # generate_image_name(), consider the count when loading??
+
+
+        tags = self.tag_input.plainText() # this looks like "red\nshirt\n"
+
+        #ANDREW TODO if overlapping any
+        if(True):   # True flag is temp
+            closet.append(input_clothing(closet, id, name, image)) #ANDREW TODO input_clothing also takes tag string
+
+            #reset_register_page() #TODO
+            self.confirm_button.setText("Confirm")
+
+            go_main_page()
+        else:
+
+            self.confirm_button.setText("Confirm (Error: ID already taken)")
+
 
 
 class camera_page(QWidget):
@@ -222,7 +250,10 @@ class RFIDReader(QThread):
 
 def on_rfid_detected(rfid_data):
     print(rfid_data)
-    print("yo")
+
+    #TODO only go when on main menu/new RFID
+    register_page.id_input.setText(rfid_data)
+    go_register_page()
 
 
 
@@ -234,6 +265,7 @@ if __name__ == "__main__":
     main_page = main_page()
     register_page = register_page()
     camera_page = camera_page()
+    # edit_page =
     stacked_widget =  QStackedWidget()
     stacked_widget.addWidget(main_page)
     stacked_widget.addWidget(register_page)
