@@ -1,0 +1,13 @@
+Clothing ID: 39 A0 4B 92
+Clothing Name: Andrew's Shirt
+- Stripes
+- Blue
+- Pocket
+- Short Sleeve
+- Large
+Clothing ID: 21 A0 C9 B4
+Clothing Name: Andrew's Shorts
+- Gray
+- Gym
+- Medium
+- Pocket
