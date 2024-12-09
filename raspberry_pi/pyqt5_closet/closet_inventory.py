@@ -34,7 +34,7 @@ class Clothing:
                 return True
         return False
         
-def input_clothing(closet, manual_id = "123", manual_name = "None", manual_image = "0", ser=None):
+def input_clothing(closet, manual_id = "123", manual_name = "None", manual_image = "0", manual_detail = "", ser=None):
     clothing = Clothing()
     ID_array = [clothes.ID for clothes in closet]
 
@@ -57,12 +57,15 @@ def input_clothing(closet, manual_id = "123", manual_name = "None", manual_image
             break
     clothing.name = manual_name
 
-    while True:
-        detail = "done" #input("Enter Detail (or type 'done' to finish): ")
-        if detail == "done":
-            break
-        clothing.details.append(detail)
-    
+    clothing.details = manual_detail
+#    else:
+#        print("Enter details (or type 'done' to finish):")
+#        while True:
+#            detail = input("Detail: ")
+#            if detail == "done":
+#                break
+#            clothing.details.append(detail)
+
     #clothing.image_name = f"image_{number}.png"
     clothing.image_name = manual_image
     image_name_list.append(clothing.image_name)
