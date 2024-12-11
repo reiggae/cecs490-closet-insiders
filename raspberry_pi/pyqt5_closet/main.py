@@ -14,16 +14,37 @@ from closet_inventory import *
 class Page(IntEnum):
     MAIN = 0
     REGISTER = 1
-    CAMERA = 2
-    EDIT = 3
+    EDIT = 2
+    CAMERA = 3
+    OUTFIT_MAIN = 4
+    OUTFIT_REGISTER = 5
+    OUTFIT_EDIT = 6
 
 closet = []
 
-def debug_function():
-    print_closet(closet)
-
 def sort_closet(): #ANDREW2 TODO
     pass
+
+class clothing_button(QPushButton):
+    def __init__(self, closet_index, parent=None):
+        super().__init__(parent)
+        self.setLayout(QVBoxLayout())
+
+        self.image = QLabel()
+        self.image.setPixmap(QPixmap(f"{closet[closet_index].image_name}"))
+        self.image.setScaledContents(True)
+        self.image.setMaximumSize(150,150)
+
+        self.label = QLabel(closet[closet_index].name)
+
+        self.layout().addWidget(self.label,alignment=Qt.AlignTop|Qt.AlignCenter)
+        self.layout().addWidget(self.image,alignment=Qt.AlignTop|Qt.AlignCenter)
+
+
+        self.clicked.connect(lambda state, item_index = closet_index: setup_edit_page(item_index))
+#        self.setStyleSheet("border-image : url({});".format(closet[closet_index].image_name))
+        self.setMinimumSize(170,190)
+        self.setMaximumSize(170,190)
 
 def generate_item_buttons():
     value_count = 0
@@ -36,16 +57,15 @@ def generate_item_buttons():
     for i in range(len(closet)):
         if closet[i].contains(search_term):
             #ANDREW TODO does item match filter text? true:
-            newButton = QPushButton()
-            newButton.clicked.connect(lambda state, item_index = i: setup_edit_page(item_index))
-            newButton.setStyleSheet("border-image : url({});".format(closet[i].image_name))
-            newButton.setMinimumSize(100,100)
-            newButton.setMaximumSize(100,100)
+            newButton = clothing_button(i)
             #ANDREW TODO replace "i" here with valid count or whatever
-            main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop)
+            main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop|Qt.AlignCenter)
             value_count += 1
 
+    main_page.main_scroll.updateGeometry()
 
+def generate_outfit_buttons():
+    pass
 
 def setup_edit_page(item_index):
     item = closet[item_index]
@@ -72,6 +92,9 @@ def go_main_page():
 def go_register_page():
     stacked_widget.setCurrentIndex(Page.REGISTER)
 
+def go_edit_page():
+    stacked_widget.setCurrentIndex(Page.EDIT)
+
 def go_register_camera_page():
     camera_page.new_image = True
     stacked_widget.setCurrentIndex(Page.CAMERA)
@@ -80,8 +103,11 @@ def go_edit_camera_page():
     camera_page.new_image = False
     stacked_widget.setCurrentIndex(Page.CAMERA)
 
-def go_edit_page():
-    stacked_widget.setCurrentIndex(Page.EDIT)
+def go_outfit_main_page():
+    stacked_widget.setCurrentIndex(Page.OUTFIT_MAIN)
+
+def go_outfit_register_page():
+    stacked_widget.setCurrentIndex(Page.OUTFIT_REGISTER)
 
 class main_page(QWidget):
     def __init__(self, parent=None):
@@ -102,6 +128,7 @@ class main_page(QWidget):
         self.main_scroll = QScrollArea()
         self.scroll_area_contents = QWidget()
         self.main_scroll_layout = QGridLayout()
+        self.main_scroll_layout.setSizeConstraint(QLayout.SetFixedSize)
 
         #TEMP
         row = 0
@@ -109,8 +136,8 @@ class main_page(QWidget):
         for row in range(0,20):
             for col in range(0,3):
                 object = QPushButton(str(row))
-                object.setMinimumSize(100,100)
-                object.setMaximumSize(100,100)
+                object.setMinimumSize(170,170)
+                object.setMaximumSize(170,170)
                 self.main_scroll_layout.addWidget(object,row,col)
 
         self.scroll_area_contents.setLayout(self.main_scroll_layout)
@@ -121,6 +148,7 @@ class main_page(QWidget):
         self.main_scroll.setWidget(self.scroll_area_contents)
 
         self.register_button = QPushButton("Register New Item")
+        self.outfits_button = QPushButton("OUTFITS")
 
         # Initialize main page layout
         self.layout.addWidget(self.inventory_label, alignment = Qt.AlignTop|Qt.AlignCenter)
@@ -128,14 +156,11 @@ class main_page(QWidget):
         self.layout.addWidget(self.search_button)
         self.layout.addWidget(self.main_scroll)
         self.layout.addWidget(self.register_button)
+        self.layout.addWidget(self.outfits_button)
 
         self.register_button.clicked.connect(go_register_page)
         self.search_button.clicked.connect(generate_item_buttons)
-
-        #DEBUG
-        self.debug_button = QPushButton("DEBUG")
-        self.debug_button.clicked.connect(debug_function)
-        self.layout.addWidget(self.debug_button)
+        self.outfits_button.clicked.connect(go_outfit_main_page)
 
 class register_page(QWidget):
     image_number = 0
@@ -338,6 +363,146 @@ class edit_page(QWidget):
 
             self.confirm_button.setText("Confirm Changes (Error: ID already taken)")
 
+class outfit_main_page(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        # Initialize main page widgets
+        self.inventory_label = QLabel("OUTFITS")
+        self.inventory_label.setFont(QFont("Sans Serif",32))
+
+        self.search_bar = QLineEdit()
+        self.search_bar.setPlaceholderText("Search Bar")
+
+        self.search_button = QPushButton("Search")
+
+        self.main_scroll = QScrollArea()
+        self.scroll_area_contents = QWidget()
+        self.main_scroll_layout = QGridLayout()
+
+        #TEMP
+        row = 0
+        col = 0
+        for row in range(0,20):
+            for col in range(0,3):
+                object = QPushButton(str(row))
+                object.setMinimumSize(100,100)
+                object.setMaximumSize(100,100)
+                self.main_scroll_layout.addWidget(object,row,col)
+
+        self.scroll_area_contents.setLayout(self.main_scroll_layout)
+        QScroller.grabGesture(self.main_scroll.viewport(), QScroller.LeftMouseButtonGesture)
+        self.main_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.main_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.main_scroll.setWidgetResizable(False)
+        self.main_scroll.setWidget(self.scroll_area_contents)
+
+        self.register_button = QPushButton("Register New Outfit")
+        self.clothes_button = QPushButton("CLOTHES")
+
+        # Initialize main page layout
+        self.layout.addWidget(self.inventory_label, alignment = Qt.AlignTop|Qt.AlignCenter)
+        self.layout.addWidget(self.search_bar)
+        self.layout.addWidget(self.search_button)
+        self.layout.addWidget(self.main_scroll)
+        self.layout.addWidget(self.register_button)
+        self.layout.addWidget(self.clothes_button)
+
+        self.register_button.clicked.connect(go_outfit_register_page)
+        self.search_button.clicked.connect(generate_outfit_buttons)
+        self.clothes_button.clicked.connect(go_main_page)
+
+class outfit_register_page(QWidget):
+    class clothing_piece_bar(QWidget):
+        def __init__(self, piece_name, parent=None):
+            super().__init__(parent)
+
+            self.piece_scroll = QScrollArea()
+            self.piece_scroll_area_contents = QWidget()
+            self.piece_scroll_layout = QHBoxLayout()
+
+            #TEMP
+            for i in range(0,20):
+                object = QPushButton(str(i))
+                object.setMinimumSize(100,100)
+                object.setMaximumSize(100,100)
+                self.piece_scroll_layout.addWidget(object)
+
+            self.piece_scroll_area_contents.setLayout(self.piece_scroll_layout)
+            QScroller.grabGesture(self.piece_scroll.viewport(), QScroller.LeftMouseButtonGesture)
+            self.piece_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            self.piece_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+            self.piece_scroll.setWidgetResizable(False)
+            self.piece_scroll.setWidget(self.piece_scroll_area_contents)
+            self.piece_scroll.setMinimumHeight(140)
+
+            self.piece_image = QPushButton(piece_name)
+            self.setLayout(QHBoxLayout())
+            self.layout().addWidget(self.piece_image)
+            self.layout().addWidget(self.piece_scroll)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self.title = QLabel("NEW OUTFIT DETAILS")
+        self.title.setFont(QFont("Sans Serif",32))
+
+        self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText("Name")
+
+        self.top_piece_bar = self.clothing_piece_bar("top")
+        self.bottom_piece_bar = self.clothing_piece_bar("bottom")
+        self.shoe_piece_bar = self.clothing_piece_bar("shoe")
+
+        self.tag_input = QPlainTextEdit()
+        self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
+#        self.tag_input.setMaximumHeight(50)
+
+        self.confirm_button = QPushButton("Confirm New Outfit")
+        self.exit_button = QPushButton("Exit")
+
+        self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
+        self.layout.addWidget(self.name_input)
+        self.layout.addWidget(self.top_piece_bar)
+        self.layout.addWidget(self.bottom_piece_bar)
+        self.layout.addWidget(self.shoe_piece_bar)
+        self.layout.addWidget(self.tag_input)
+        self.layout.addWidget(self.confirm_button)
+        self.layout.addWidget(self.exit_button)
+
+        self.confirm_button.clicked.connect(self.register_clothing)
+        self.exit_button.clicked.connect(go_main_page)
+
+    def register_clothing(self):
+        id = self.id_input.text()
+        name = self.name_input.text()
+        tags = self.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
+        tags = [tag.strip() for tag in tags if tag.strip()]
+
+        # generate_image_name(), consider the count when loading??
+        #ANDREW TODO if overlapping any
+        if id not in register_page.id_list:   # True flag is temp
+            register_page.id_list.append(id)
+            image = f"image_{register_page.image_number}.jpg" #ANDREW TODO, automatic image name scheme
+            register_page.image_number += 1
+            closet.append(input_clothing(closet, id, name, image, tags)) #ANDREW TODO input_clothing also takes tag string
+
+            self.confirm_button.setText("Confirm")
+
+            sort_closet() #ANDREW2 TODO, sort by color and also assign led number
+            reset_register_page()
+            go_main_page()
+        else:
+
+            self.confirm_button.setText("Confirm (Error: ID already taken)")
+
+
 class RFIDReader(QThread):
     rfid_detected = pyqtSignal(str)
 
@@ -387,14 +552,17 @@ if __name__ == "__main__":
     register_page = register_page()
     camera_page = camera_page()
     edit_page = edit_page()
+    outfit_main_page = outfit_main_page()
+    outfit_register_page = outfit_register_page()
+
     stacked_widget =  QStackedWidget()
     stacked_widget.addWidget(main_page)
     stacked_widget.addWidget(register_page)
-    stacked_widget.addWidget(camera_page)
     stacked_widget.addWidget(edit_page)
-    #stacked_widget.addWidget(outfit_page)             matches main_page
-    #stacked_widget.addWidget(register_outfit_page)
-    #stacked_widget.addWidget(edit_outfit_page)
+    stacked_widget.addWidget(camera_page)
+    stacked_widget.addWidget(outfit_main_page)             #matches main_page
+    stacked_widget.addWidget(outfit_register_page)
+    #stacked_widget.addWidget(outfit_edit_page)
 
     ### RFID STUFF
     port = "/dev/ttyACM0"  # Hardcoded Arduino port
