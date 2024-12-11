@@ -7,13 +7,23 @@ from PyQt5.QtSerialPort import *
 
 from picamera2.previews.qt import QGlPicamera2
 from picamera2 import Picamera2
+from enum import IntEnum
 
 from closet_inventory import *
+
+class Page(IntEnum):
+    MAIN = 0
+    REGISTER = 1
+    CAMERA = 2
+    EDIT = 3
 
 closet = []
 
 def debug_function():
     print_closet(closet)
+
+def sort_closet(): #ANDREW2 TODO
+    pass
 
 def generate_item_buttons():
     value_count = 0
@@ -51,23 +61,27 @@ def setup_edit_page(item_index):
     for tag in item.details:
         tag_input_text += f"{tag}\n"
 
-    edit_page.tag_input.setPlainText(tag_input_text) #TODO fix, turn list into newlined text
+    edit_page.tag_input.setPlainText(tag_input_text)
 
     go_edit_page()
 
 def go_main_page():
     generate_item_buttons()
-    reset_register_page()
-    stacked_widget.setCurrentIndex(0)
+    stacked_widget.setCurrentIndex(Page.MAIN)
 
 def go_register_page():
-    stacked_widget.setCurrentIndex(1)
+    stacked_widget.setCurrentIndex(Page.REGISTER)
 
-def go_camera_page():
-    stacked_widget.setCurrentIndex(2)
+def go_register_camera_page():
+    camera_page.new_image = True
+    stacked_widget.setCurrentIndex(Page.CAMERA)
+
+def go_edit_camera_page():
+    camera_page.new_image = False
+    stacked_widget.setCurrentIndex(Page.CAMERA)
 
 def go_edit_page():
-    stacked_widget.setCurrentIndex(3)
+    stacked_widget.setCurrentIndex(Page.EDIT)
 
 class main_page(QWidget):
     def __init__(self, parent=None):
@@ -153,7 +167,7 @@ class register_page(QWidget):
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
 #        self.tag_input.setMaximumHeight(50)
 
-        self.confirm_button = QPushButton("Confirm")
+        self.confirm_button = QPushButton("Confirm New Item")
         self.exit_button = QPushButton("Exit")
 
         self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
@@ -165,7 +179,7 @@ class register_page(QWidget):
         self.layout.addWidget(self.confirm_button)
         self.layout.addWidget(self.exit_button)
 
-        self.camera_button.clicked.connect(go_camera_page)
+        self.camera_button.clicked.connect(go_register_camera_page)
         self.confirm_button.clicked.connect(self.register_clothing)
         self.exit_button.clicked.connect(go_main_page)
 
@@ -186,6 +200,7 @@ class register_page(QWidget):
             self.confirm_button.setText("Confirm")
 
             sort_closet() #ANDREW2 TODO, sort by color and also assign led number
+            reset_register_page()
             go_main_page()
         else:
 
@@ -194,7 +209,7 @@ class register_page(QWidget):
 def reset_register_page():
     register_page.id_input.setText("")
     register_page.name_input.setText("")
-    #TODO reset image
+    register_page.image_preview.setPixmap(QPixmap('placeholder_shirt.png'))
     register_page.tag_input.setPlainText("")
 
 
@@ -202,6 +217,9 @@ def reset_register_page():
 class camera_page(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.new_image = True
+
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
@@ -209,7 +227,7 @@ class camera_page(QWidget):
         self.picam2.configure(self.picam2.create_preview_configuration())
         self.camera_button = QPushButton("Take Image")
         self.back_button = QPushButton("Go Back")
-        self.back_button.clicked.connect(go_register_page)
+        self.back_button.clicked.connect(self.go_previous_page)
 
         self.qpicamera2 = QGlPicamera2(self.picam2, keep_ar=False)
 #        self.qpicamera2.setMaximumSize(500,500)
@@ -228,16 +246,28 @@ class camera_page(QWidget):
 #       qpicamera2.show()
         self.camera_button.setEnabled(False)
         self.cfg = self.picam2.create_still_configuration()
-        self.picam2.switch_mode_and_capture_file(self.cfg, f"image_{register_page.image_number}.jpg", signal_function=self.qpicamera2.signal_done)
+
+        if(self.new_image):
+            self.picam2.switch_mode_and_capture_file(self.cfg, f"image_{register_page.image_number}.jpg", signal_function=self.qpicamera2.signal_done)
+        else:
+            self.picam2.switch_mode_and_capture_file(self.cfg, f"{closet[edit_page.closet_index].image_name}", signal_function=self.qpicamera2.signal_done)
 
     def capture_done(self,job):
         self.result = self.picam2.wait(job)
         self.camera_button.setEnabled(True)
-        register_page.image_preview.setPixmap(QPixmap(f"image_{register_page.image_number}.jpg"))
-        go_register_page()
 
-    def go_to_register_page(self):
-        stacked_widget.setCurrentIndex(1)
+        if(self.new_image):
+            register_page.image_preview.setPixmap(QPixmap(f"image_{register_page.image_number}.jpg"))
+            go_register_page()
+        else:
+            edit_page.image_preview.setPixmap(QPixmap(f"closet[edit_page.closet_index].image_name"))
+            go_edit_page()
+
+    def go_previous_page(self):
+        if(self.new_image):
+            go_register_page()
+        else:
+            go_edit_page()
 
 class edit_page(QWidget):
     def __init__(self, parent=None):
@@ -268,43 +298,45 @@ class edit_page(QWidget):
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
 #        self.tag_input.setMaximumHeight(50)
 
-        self.confirm_button = QPushButton("Confirm")
-        self.exit_button = QPushButton("Exit")
+        self.confirm_button = QPushButton("Confirm Changes")
+        self.exit_button = QPushButton("Exit Without Changes")
+
+        self.locate_button = QPushButton("Locate")
+        self.delete_button = QPushButton("Delete Item")
 
         self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
+        self.layout.addWidget(self.delete_button)
         self.layout.addWidget(self.id_input)
         self.layout.addWidget(self.name_input)
         self.layout.addWidget(self.image_preview, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.camera_button)
         self.layout.addWidget(self.tag_input)
+        self.layout.addWidget(self.locate_button)
         self.layout.addWidget(self.confirm_button)
         self.layout.addWidget(self.exit_button)
 
-        self.camera_button.clicked.connect(go_camera_page) #TODO make sure goes back to correct page
+
+        self.camera_button.clicked.connect(go_edit_camera_page)
         self.confirm_button.clicked.connect(self.edit_clothing)
         self.exit_button.clicked.connect(go_main_page)
 
     def edit_clothing():
-
         id = self.id_input.text()
         name = self.name_input.text()
         tags = self.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
         tags = [tag.strip() for tag in tags if tag.strip()]
 
-        # generate_image_name(), consider the count when loading??
-        #ANDREW TODO if overlapping any
         if id not in register_page.id_list:   # True flag is temp
             # register_page.id_list.append(id)
-            image = f"image_{register_page.image_number}.jpg" #ANDREW TODO, automatic image name scheme
-            register_page.image_number += 1
-            #closet.append(update_clothing(closet, i, id, name, image, tags)) #ANDREW2 TODO update_clothing
 
-            self.confirm_button.setText("Confirm")
+            #closet.append(update_clothing(closet, i, id, name, image, tags)) #ANDREW2 TODO update_clothing
+            #REI2 TODO all edit page pictures should be named "edit.jpg". on confirm, rename to proper name... idk how do that yet lol
+            self.confirm_button.setText("Confirm Changes")
 
             go_main_page()
         else:
 
-            self.confirm_button.setText("Confirm (Error: ID already taken)")
+            self.confirm_button.setText("Confirm Changes (Error: ID already taken)")
 
 class RFIDReader(QThread):
     rfid_detected = pyqtSignal(str)
@@ -341,9 +373,10 @@ class RFIDReader(QThread):
 def on_rfid_detected(rfid_data):
     print(rfid_data)
 
-    #TODO only go when on main menu/new RFID
-    register_page.id_input.setText(rfid_data)
-    go_register_page()
+    curr_index = stacked_widget.currentIndex()
+    if  curr_index == Page.MAIN or curr_index == Page.REGISTER:
+        register_page.id_input.setText(rfid_data)
+        go_register_page()
 
 
 if __name__ == "__main__":
@@ -372,7 +405,7 @@ if __name__ == "__main__":
 
     stacked_widget.setGeometry(200, 0, 600, 500) #600, 1024)
 
-    stacked_widget.setCurrentIndex(0)
+    stacked_widget.setCurrentIndex(Page.MAIN) #TODO replace to go_main_page when done
     stacked_widget.setWindowTitle("Inside the Closet")
     stacked_widget.show()
 
