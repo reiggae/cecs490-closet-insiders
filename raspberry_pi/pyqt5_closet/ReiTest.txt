@@ -1,0 +1,29 @@
+CLOTHING ITEMS:
+Clothing ID: 7895
+Clothing Name: Shoes
+- Yellow
+- Shoe
+Image Name: image_4.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 1
+
+Clothing ID: 8975
+Clothing Name: Shirt
+- Large
+- Brown
+- Top
+Image Name: image_0.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 2
+
+Clothing ID: 897
+Clothing Name: Pants
+- Khakis
+- Bottom
+Image Name: image_1.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 3
+

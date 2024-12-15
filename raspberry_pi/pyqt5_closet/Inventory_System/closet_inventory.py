@@ -1,6 +1,6 @@
 from picamera2 import Picamera2
 #from capture_and_process_image import capture_and_process_image
-from read_card_id import read_card_id
+#from read_card_id import read_card_id
 import os
 from enum import IntEnum
 
@@ -59,6 +59,9 @@ class Clothing:
 class Outfit:
     def __init__(self):
         self.outfit_name = ""
+        self.top = []
+        self.bottom = []
+        self.shoe = []
         self.clothing_items = {}
 
     def add_clothing_item(self, clothing_type, clothing_item):
@@ -78,25 +81,14 @@ class Outfit:
             print(f"{clothing_type}:")
             clothing_item.print()
 
-def input_clothing(closet, manual_id = "123", manual_name = "None", manual_image = "0", manual_detail = "", ser=None):
+def input_clothing(closet, manual_id = "", manual_name = "", manual_image = "", manual_detail = "", ser=None):
     clothing = Clothing() 
-    while True:
-        if ser:
-            print("Please scan the clothing tag or enter the ID manually:")
-            card_id = read_card_id(ser)
-            if card_id:
-                clothing.ID = card_id
-                print(f"Clothing ID scanned: {clothing.ID}")
-            else:
-                clothing.ID = manual_id #input("Enter Clothing ID manually: ")
-        else:
-            clothing.ID = manual_id #input("Enter Clothing ID: ")
+    clothing.ID = manual_id #input("Enter Clothing ID: ")
                 
-        if Clothing.check_existing_id(closet, clothing.ID):
-            print("Tag is already registered. Use another tag. ")
-        else:
-            closet.append(clothing)
-            break
+#        if Clothing.check_existing_id(closet, clothing.ID):
+#            print("Tag is already registered. Use another tag. ")
+#        else:
+    closet.append(clothing)
     clothing.name = manual_name
 
     clothing.details = manual_detail
@@ -104,36 +96,18 @@ def input_clothing(closet, manual_id = "123", manual_name = "None", manual_image
         if clothing.contains("no hanger"):
             clothing.has_hanger = False
 
-
-#    else:
-#        print("Enter details (or type 'done' to finish):")
-#        while True:
-#            detail = input("Detail: ")
-#            if detail == "done":
-#                break
-#            clothing.details.append(detail)
-
-    #clothing.image_name = f"image_{number}.png"
     clothing.image_name = manual_image
     image_name_list.append(clothing.image_name)
     #ANDREW3 TODO If a tag contains "No Hanger", change has_hanger to false
     return clothing
     
-def remove_clothes(closet, current_id, ser=None):
-    if ser:
-        print("Please scan the clothing tag or enter the ID manually:")
-        chosen_id = read_card_id(ser)
-        if not chosen_id:
-            chosen_id = current_id
-    else:
-        chosen_id = current_id
+def remove_clothes(closet, index):
     
-    for i, clothing in enumerate(closet):
-        if clothing.ID == chosen_id:
-            del closet[i]
-            print("Clothing removed successfully.")
-            return
-    print(f"There are no Clothings with the ID of {chosen_id}")
+    if 0 <= index < len(closet):
+        del closet[index]
+        print("Clothing removed successfully.")
+    else:
+        print(f"There is no clothing in index {index}.")
     
 def print_closet(closet):
     print("Closet contents:")
@@ -141,14 +115,12 @@ def print_closet(closet):
         print(f"Clothing {i + 1}:")
         clothing.print()
 # Function to update clothing
-def update_clothes(closet, id, name, image, tags):
-    for clothing in closet:
-        if clothing.ID == id:
-            # Update existing clothing item
-            clothing.name = name
-            clothing.details = tags
+def update_clothes(closet, index, id, name, image, tags):
+    clothing = closet[index]
 
-            clothing.ID = id
+    clothing.ID = id
+    clothing.name = name
+    clothing.details = tags
 
 
 # Search Function
