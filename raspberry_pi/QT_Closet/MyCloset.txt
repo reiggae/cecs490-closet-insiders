@@ -1,0 +1,18 @@
+CLOTHING ITEMS:
+Clothing ID: 200
+Clothing Name: Shirt #2
+- Red
+- No Hanger
+Image Name: image_1.jpg
+Checked in Status: False
+Clothing on Hanger: False
+Assigned to LED #: N/A
+
+Clothing ID: 100
+Clothing Name: Shirt #1
+- Green
+Image Name: image_0.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 1
+
