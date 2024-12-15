@@ -59,6 +59,9 @@ class Clothing:
 class Outfit:
     def __init__(self):
         self.outfit_name = ""
+        self.top = []
+        self.bottom = []
+        self.shoe = []
         self.clothing_items = {}
 
     def add_clothing_item(self, clothing_type, clothing_item):
@@ -98,21 +101,13 @@ def input_clothing(closet, manual_id = "", manual_name = "", manual_image = "", 
     #ANDREW3 TODO If a tag contains "No Hanger", change has_hanger to false
     return clothing
     
-def remove_clothes(closet, current_id, ser=None):
-    if ser:
-        print("Please scan the clothing tag or enter the ID manually:")
-        chosen_id = read_card_id(ser)
-        if not chosen_id:
-            chosen_id = current_id
-    else:
-        chosen_id = current_id
+def remove_clothes(closet, index):
     
-    for i, clothing in enumerate(closet):
-        if clothing.ID == chosen_id:
-            del closet[i]
-            print("Clothing removed successfully.")
-            return
-    print(f"There are no Clothings with the ID of {chosen_id}")
+    if 0 <= index < len(closet):
+        del closet[index]
+        print("Clothing removed successfully.")
+    else:
+        print(f"There is no clothing in index {index}.")
     
 def print_closet(closet):
     print("Closet contents:")
@@ -120,14 +115,12 @@ def print_closet(closet):
         print(f"Clothing {i + 1}:")
         clothing.print()
 # Function to update clothing
-def update_clothes(closet, id, name, image, tags):
-    for clothing in closet:
-        if clothing.ID == id:
-            # Update existing clothing item
-            clothing.name = name
-            clothing.details = tags
+def update_clothes(closet, index, id, name, image, tags):
+    clothing = closet[index]
 
-            clothing.ID = id
+    clothing.ID = id
+    clothing.name = name
+    clothing.details = tags
 
 
 # Search Function

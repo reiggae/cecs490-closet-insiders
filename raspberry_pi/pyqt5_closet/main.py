@@ -41,6 +41,7 @@ class Page(IntEnum):
     OUTFIT_EDIT = 6
 
 closet = []
+outfits = []
 
 class Main_Stack(QStackedWidget):
     # Clothing button on item page, shows image and name of item
@@ -237,13 +238,12 @@ class Main_Stack(QStackedWidget):
         tags = [tag.strip() for tag in tags if tag.strip()]
         image = f"image_{self.item_register_page.image_number}.jpg"
 
-        update_clothes(closet, id, name, image, tags)
-        """
+
         #ANDREW4 TODO, update based on given index, not ID, sorry i forgot to put it here
 
         closet_index = self.item_edit_page.closet_index
         update_clothes(closet, closet_index, id, name, image, tags)
-        """
+
 
         self.item_edit_page.confirm_button.setText("Confirm")
 
@@ -252,11 +252,13 @@ class Main_Stack(QStackedWidget):
         self.go_item_main_page()
 
     def delete_clothing(self):
-        """
+
         #ANDREW4 TODO
         closet_index = self.item_edit_page.closet_index
-        delete_clothing(closet, closet_index) <- idk if this is right, maybe it is
-        """
+        remove_clothes(closet, closet_index)
+        self.reset_item_register_page()
+        self.go_item_main_page()
+
 
     # CAMERA PAGE FUNCTIONS
     def take_photo(self):
@@ -297,7 +299,7 @@ class Main_Stack(QStackedWidget):
         search_term = self.outfit_main_page.search_bar.text()
 
         for i in range(len(closet)):
-            if outfit[i].contains(search_term): #ANDREW4 TODO outfit[] currently nothing
+            if outfits[i].contains(search_term): #ANDREW4 TODO outfit[] currently nothing
                 newButton = self.clothing_button(i)
                 newButton.clicked.connect(lambda state, item_index = i: self.setup_outfit_edit_page(item_index))
                 self.outfit_main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop|Qt.AlignCenter)
@@ -310,21 +312,24 @@ class Main_Stack(QStackedWidget):
         #ANDREW4 TODO, set up this code, generates when launching outfit register page
 
         #iterate through clothing, im using 1 for hardcoded example
-        i = 1
+
 
         # if clothing item has "top"
-
-        newButton = self.clothing_button(i)
-        newButton.clicked.connect(lambda state, item_index = i: self.set_as_top(item_index))
-        self.outfit_register_page.top_piece_bar.piece_scroll_layout.addWidget(newButton)
+        for i, clothing in enumerate(closet):
+            if clothing.contains("top"):
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.set_as_top(item_index))
+                self.outfit_register_page.top_piece_bar.piece_scroll_layout.addWidget(newButton)
         # else if clothing item has "bottom"
-        newButton = self.clothing_button(i)
-        newButton.clicked.connect(lambda state, item_index = i: self.set_as_bottom(item_index))
-        self.outfit_register_page.bottom_piece_bar.piece_scroll_layout.addWidget(newButton)
+            elif clothing.contains("bottom"):
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.set_as_bottom(item_index))
+                self.outfit_register_page.bottom_piece_bar.piece_scroll_layout.addWidget(newButton)
+            elif clothing.contains("shoe"):
         # else if clothing item has "shoe"
-        newButton = self.clothing_button(i)
-        newButton.clicked.connect(lambda state, item_index = i: self.set_as_shoe(item_index))
-        self.outfit_register_page.shoe_piece_bar.piece_scroll_layout.addWidget(newButton)
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.set_as_shoe(item_index))
+                self.outfit_register_page.shoe_piece_bar.piece_scroll_layout.addWidget(newButton)
 
     def set_as_top(self, item_index):
         self.outfit_register_page.top_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
