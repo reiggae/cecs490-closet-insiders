@@ -1,13 +1,21 @@
-# This Python file uses the following encoding: utf-8
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtSerialPort import *
 
-from picamera2.previews.qt import QGlPicamera2
-from picamera2 import Picamera2
 from enum import IntEnum
+
+from Pages.Item_Main_Page import *
+from Pages.Item_Register_Page import *
+from Pages.Item_Edit_Page import *
+from Pages.Camera_Page import *
+from Pages.Outfit_Main_Page import *
+from Pages.Outfit_Register_Page import *
+from Pages.Outfit_Edit_Page import *
+from Keyboard.Keyboard import *
+from Inventory_System.closet_inventory import *
+from Inventory_System.RFIDReader import *
 
 import sys
 import time
@@ -16,26 +24,17 @@ import neopixel_spi as neopixel
 
 import subprocess
 
-from closet_inventory import *
+from picamera2.previews.qt import QGlPicamera2
+from picamera2 import Picamera2
 
-class keyboard():
-    def __init__(self):
-        self.KB_Active = False
+#TEMP
+save_file = "ReiTest.txt"
 
-    def KB_On(self):
-        self.KB_Active = True
-        subprocess.Popen(["bash", "KB_Start.sh"])
-
-    def KB_Off(self):
-        self.KB_Active = False
-        subprocess.Popen(["bash", "KB_Off.sh"])
-
-keyboard = keyboard()
-
+# Enumerating page numbers
 class Page(IntEnum):
-    MAIN = 0
-    REGISTER = 1
-    EDIT = 2
+    ITEM_MAIN = 0
+    ITEM_REGISTER = 1
+    ITEM_EDIT = 2
     CAMERA = 3
     OUTFIT_MAIN = 4
     OUTFIT_REGISTER = 5
@@ -43,614 +42,397 @@ class Page(IntEnum):
 
 closet = []
 
-def sort_closet(): #ANDREW2 TODO
-    pass
-
-def light_LED():
-    pixels[0] = 0xFF0000
-    pixels.show()
-
-
-class clothing_button(QPushButton):
-    def __init__(self, closet_index, parent=None):
-        super().__init__(parent)
-        self.setLayout(QVBoxLayout())
-
-        self.image = QLabel()
-        self.image.setPixmap(QPixmap(f"{closet[closet_index].image_name}"))
-        self.image.setScaledContents(True)
-        self.image.setMaximumSize(150,150)
-
-        self.label = QLabel(closet[closet_index].name)
-
-        self.layout().addWidget(self.label,alignment=Qt.AlignTop|Qt.AlignCenter)
-        self.layout().addWidget(self.image,alignment=Qt.AlignTop|Qt.AlignCenter)
-
-
-        self.clicked.connect(lambda state, item_index = closet_index: setup_edit_page(item_index))
-#        self.setStyleSheet("border-image : url({});".format(closet[closet_index].image_name))
-        self.setMinimumSize(170,190)
-        self.setMaximumSize(170,190)
-
-def generate_item_buttons():
-    value_count = 0
-    # deletes existing item buttons
-    for i in reversed(range(main_page.main_scroll_layout.count())):
-        main_page.main_scroll_layout.itemAt(i).widget().setParent(None)
-
-    search_term = main_page.search_bar.text()
-
-    for i in range(len(closet)):
-        if closet[i].contains(search_term):
-            #ANDREW TODO does item match filter text? true:
-            newButton = clothing_button(i)
-            #ANDREW TODO replace "i" here with valid count or whatever
-            main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop|Qt.AlignCenter)
-            value_count += 1
-
-    main_page.main_scroll.updateGeometry()
-
-def generate_outfit_buttons():
-    pass
-
-def setup_edit_page(item_index):
-    item = closet[item_index]
-    edit_page.closet_index = item_index
-
-    edit_page.id_input.setText(item.ID)
-    edit_page.name_input.setText(item.name)
-    edit_page.image_preview.setPixmap(QPixmap(f"{item.image_name}"))
-    edit_page.image_preview.setScaledContents(True)
-    edit_page.image_preview.setMaximumSize(100,100)
-
-    tag_input_text = ""
-    for tag in item.details:
-        tag_input_text += f"{tag}\n"
-
-    edit_page.tag_input.setPlainText(tag_input_text)
-
-    go_edit_page()
-
-def go_main_page():
-    keyboard.KB_Off()
-    generate_item_buttons()
-    stacked_widget.setCurrentIndex(Page.MAIN)
-
-def go_register_page():
-    keyboard.KB_Off()
-    stacked_widget.setCurrentIndex(Page.REGISTER)
-
-def go_edit_page():
-    keyboard.KB_Off()
-    stacked_widget.setCurrentIndex(Page.EDIT)
-
-def go_register_camera_page():
-    keyboard.KB_Off()
-    camera_page.new_image = True
-    stacked_widget.setCurrentIndex(Page.CAMERA)
-
-def go_edit_camera_page():
-    keyboard.KB_Off()
-    camera_page.new_image = False
-    stacked_widget.setCurrentIndex(Page.CAMERA)
-
-def go_outfit_main_page():
-    keyboard.KB_Off()
-    stacked_widget.setCurrentIndex(Page.OUTFIT_MAIN)
-
-def go_outfit_register_page():
-    keyboard.KB_Off()
-    stacked_widget.setCurrentIndex(Page.OUTFIT_REGISTER)
-
-class main_page(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        # Initialize main page widgets
-        self.inventory_label = QLabel("INVENTORY")
-        self.inventory_label.setFont(QFont("Sans Serif",32))
-
-        self.search_bar = QLineEdit()
-        self.search_bar.setPlaceholderText("Search Bar")
-        #KEVIN
-        self.search_bar.installEventFilter(self)
-
-
-        self.search_button = QPushButton("Search")
-
-        self.main_scroll = QScrollArea()
-        self.scroll_area_contents = QWidget()
-        self.main_scroll_layout = QGridLayout()
-        self.main_scroll_layout.setSizeConstraint(QLayout.SetFixedSize)
-
-        #TEMP
-        row = 0
-        col = 0
-        for row in range(0,20):
-            for col in range(0,3):
-                object = QPushButton(str(row))
-                object.setMinimumSize(170,170)
-                object.setMaximumSize(170,170)
-                object.clicked.connect(light_LED)
-                self.main_scroll_layout.addWidget(object,row,col)
-
-
-        self.scroll_area_contents.setLayout(self.main_scroll_layout)
-        QScroller.grabGesture(self.main_scroll.viewport(), QScroller.LeftMouseButtonGesture)
-        self.main_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.main_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.main_scroll.setWidgetResizable(False)
-        self.main_scroll.setWidget(self.scroll_area_contents)
-
-        self.register_button = QPushButton("Register New Item")
-        self.outfits_button = QPushButton("OUTFITS")
-
-        # Initialize main page layout
-        self.layout.addWidget(self.inventory_label, alignment = Qt.AlignTop|Qt.AlignCenter)
-        self.layout.addWidget(self.search_bar)
-        self.layout.addWidget(self.search_button)
-        self.layout.addWidget(self.main_scroll)
-        self.layout.addWidget(self.register_button)
-        self.layout.addWidget(self.outfits_button)
-
-        self.register_button.clicked.connect(go_register_page)
-        self.search_button.clicked.connect(generate_item_buttons)
-        self.outfits_button.clicked.connect(go_outfit_main_page)
-
-    def eventFilter(self,obj, event):
-        #Check for events on lineEdit
-
-        #Turns on KB
-        if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == False:
-            keyboard.KB_On()
-            return True
-        #Turns off KB
-        elif event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == True:
-            keyboard.KB_Off()
-            return True
-
-        return super().eventFilter(obj, event)
-
-class register_page(QWidget):
-    image_number = 0
-    id_list = []
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        #
-        self.title = QLabel("NEW ITEM DETAILS")
-        self.title.setFont(QFont("Sans Serif",32))
-
-        self.id_input = QLineEdit()
-        self.id_input.setPlaceholderText("ID Number (scan to auto fill)")
-        self.id_input.installEventFilter(self)
-
-        self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Name")
-        self.name_input.installEventFilter(self)
-
-        self.image_preview = QLabel()
-        self.image_preview.setPixmap(QPixmap('placeholder_shirt.png'))
-        self.image_preview.setScaledContents(True)
-        self.image_preview.setMaximumSize(100,100)
-
-        self.camera_button = QPushButton("Open Camera")
-
-        self.tag_input = QTextEdit()#QPlainTextEdit()
-        self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
-        self.tag_input.viewport().installEventFilter(self)
-        #        self.tag_input.setMaximumHeight(50)
-
-        self.confirm_button = QPushButton("Confirm New Item")
-        self.exit_button = QPushButton("Exit")
-
-        self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
-        self.layout.addWidget(self.id_input)
-        self.layout.addWidget(self.name_input)
-        self.layout.addWidget(self.image_preview, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.camera_button)
-        self.layout.addWidget(self.tag_input)
-        self.layout.addWidget(self.confirm_button)
-        self.layout.addWidget(self.exit_button)
-
-        self.camera_button.clicked.connect(go_register_camera_page)
-        self.confirm_button.clicked.connect(self.register_clothing)
-        self.exit_button.clicked.connect(go_main_page)
-
-    def eventFilter(self,obj, event):
-        #Check for events on lineEdit
-        #Turns on KB
-        if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == False:
-            keyboard.KB_On()
-            return True
-        #Turns off KB
-        elif event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == True:
-            keyboard.KB_Off()
-            return True
-
-        return super().eventFilter(obj, event)
-
-    def register_clothing(self):
-        id = self.id_input.text()
-        name = self.name_input.text()
-        tags = self.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
-        tags = [tag.strip() for tag in tags if tag.strip()]
-
-        # generate_image_name(), consider the count when loading??
-        #ANDREW TODO if overlapping any
-        if id not in register_page.id_list:   # True flag is temp
-            register_page.id_list.append(id)
-            image = f"image_{register_page.image_number}.jpg" #ANDREW TODO, automatic image name scheme
-            register_page.image_number += 1
-            closet.append(input_clothing(closet, id, name, image, tags)) #ANDREW TODO input_clothing also takes tag string
-
-            self.confirm_button.setText("Confirm")
-
-            sort_closet() #ANDREW2 TODO, sort by color and also assign led number
-            reset_register_page()
-            go_main_page()
-        else:
-
-            self.confirm_button.setText("Confirm (Error: ID already taken)")
-
-def reset_register_page():
-    register_page.id_input.setText("")
-    register_page.name_input.setText("")
-    register_page.image_preview.setPixmap(QPixmap('placeholder_shirt.png'))
-    register_page.tag_input.setPlainText("")
-
-
-
-class camera_page(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.new_image = True
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self.picam2 = Picamera2()
-        self.picam2.configure(self.picam2.create_preview_configuration())
-        self.camera_button = QPushButton("Take Image")
-        self.back_button = QPushButton("Go Back")
-        self.back_button.clicked.connect(self.go_previous_page)
-
-        self.qpicamera2 = QGlPicamera2(self.picam2, keep_ar=False)
-#        self.qpicamera2.setMaximumSize(500,500)
-
-        self.layout.addWidget(self.qpicamera2)
-        self.layout.addWidget(self.camera_button)
-        self.layout.addWidget(self.back_button)
-
-        self.picam2.start()
-
-        self.camera_button.clicked.connect(self.take_photo)
-
-        self.qpicamera2.done_signal.connect(self.capture_done)
-
-    def take_photo(self):
-#       qpicamera2.show()
-        self.camera_button.setEnabled(False)
-        self.cfg = self.picam2.create_still_configuration()
-
-        if(self.new_image):
-            self.picam2.switch_mode_and_capture_file(self.cfg, f"image_{register_page.image_number}.jpg", signal_function=self.qpicamera2.signal_done)
-        else:
-            self.picam2.switch_mode_and_capture_file(self.cfg, f"{closet[edit_page.closet_index].image_name}", signal_function=self.qpicamera2.signal_done)
-
-    def capture_done(self,job):
-        self.result = self.picam2.wait(job)
-        self.camera_button.setEnabled(True)
-
-        if(self.new_image):
-            register_page.image_preview.setPixmap(QPixmap(f"image_{register_page.image_number}.jpg"))
-            go_register_page()
-        else:
-            edit_page.image_preview.setPixmap(QPixmap(f"closet[edit_page.closet_index].image_name"))
-            go_edit_page()
-
-    def go_previous_page(self):
-        if(self.new_image):
-            go_register_page()
-        else:
-            go_edit_page()
-
-class edit_page(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.closet_index = 0
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self.title = QLabel("EDITING")
-        self.title.setFont(QFont("Sans Serif",32))
-
-        self.id_input = QLineEdit()
-        self.id_input.setPlaceholderText("ID Number (scan to auto fill)")
-
-        self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Name")
-
-        self.image_preview = QLabel()
-        self.image_preview.setPixmap(QPixmap('placeholder_shirt.png'))
-        self.image_preview.setScaledContents(True)
-        self.image_preview.setMaximumSize(100,100)
-
-        self.camera_button = QPushButton("Open Camera")
-
-        self.tag_input = QPlainTextEdit()
-        self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
-#        self.tag_input.setMaximumHeight(50)
-
-        self.confirm_button = QPushButton("Confirm Changes")
-        self.exit_button = QPushButton("Exit Without Changes")
-
-        self.locate_button = QPushButton("Locate")
-        self.delete_button = QPushButton("Delete Item")
-
-        self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
-        self.layout.addWidget(self.delete_button)
-        self.layout.addWidget(self.id_input)
-        self.layout.addWidget(self.name_input)
-        self.layout.addWidget(self.image_preview, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.camera_button)
-        self.layout.addWidget(self.tag_input)
-        self.layout.addWidget(self.locate_button)
-        self.layout.addWidget(self.confirm_button)
-        self.layout.addWidget(self.exit_button)
-
-
-        self.camera_button.clicked.connect(go_edit_camera_page)
-        self.confirm_button.clicked.connect(self.edit_clothing)
-        self.exit_button.clicked.connect(go_main_page)
-
-    def edit_clothing():
-        id = self.id_input.text()
-        name = self.name_input.text()
-        tags = self.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
-        tags = [tag.strip() for tag in tags if tag.strip()]
-
-        if id not in register_page.id_list:   # True flag is temp
-            # register_page.id_list.append(id)
-
-            #closet.append(update_clothing(closet, i, id, name, image, tags)) #ANDREW2 TODO update_clothing
-            #REI2 TODO all edit page pictures should be named "edit.jpg". on confirm, rename to proper name... idk how do that yet lol
-            self.confirm_button.setText("Confirm Changes")
-
-            go_main_page()
-        else:
-
-            self.confirm_button.setText("Confirm Changes (Error: ID already taken)")
-
-class outfit_main_page(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        # Initialize main page widgets
-        self.inventory_label = QLabel("OUTFITS")
-        self.inventory_label.setFont(QFont("Sans Serif",32))
-
-        self.search_bar = QLineEdit()
-        self.search_bar.setPlaceholderText("Search Bar")
-
-        self.search_button = QPushButton("Search")
-
-        self.main_scroll = QScrollArea()
-        self.scroll_area_contents = QWidget()
-        self.main_scroll_layout = QGridLayout()
-
-        #TEMP
-        row = 0
-        col = 0
-        for row in range(0,20):
-            for col in range(0,3):
-                object = QPushButton(str(row))
-                object.setMinimumSize(100,100)
-                object.setMaximumSize(100,100)
-                self.main_scroll_layout.addWidget(object,row,col)
-
-        self.scroll_area_contents.setLayout(self.main_scroll_layout)
-        QScroller.grabGesture(self.main_scroll.viewport(), QScroller.LeftMouseButtonGesture)
-        self.main_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.main_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.main_scroll.setWidgetResizable(False)
-        self.main_scroll.setWidget(self.scroll_area_contents)
-
-        self.register_button = QPushButton("Register New Outfit")
-        self.clothes_button = QPushButton("CLOTHES")
-
-        # Initialize main page layout
-        self.layout.addWidget(self.inventory_label, alignment = Qt.AlignTop|Qt.AlignCenter)
-        self.layout.addWidget(self.search_bar)
-        self.layout.addWidget(self.search_button)
-        self.layout.addWidget(self.main_scroll)
-        self.layout.addWidget(self.register_button)
-        self.layout.addWidget(self.clothes_button)
-
-        self.register_button.clicked.connect(go_outfit_register_page)
-        self.search_button.clicked.connect(generate_outfit_buttons)
-        self.clothes_button.clicked.connect(go_main_page)
-
-class outfit_register_page(QWidget):
-    class clothing_piece_bar(QWidget):
-        def __init__(self, piece_name, parent=None):
+class Main_Stack(QStackedWidget):
+    # Clothing button on item page, shows image and name of item
+    class clothing_button(QPushButton):
+        def __init__(self, closet_index, parent=None):
             super().__init__(parent)
 
-            self.piece_scroll = QScrollArea()
-            self.piece_scroll_area_contents = QWidget()
-            self.piece_scroll_layout = QHBoxLayout()
+            # Initialize layout
+            self.setLayout(QVBoxLayout())
 
-            #TEMP
-            for i in range(0,20):
-                object = QPushButton(str(i))
-                object.setMinimumSize(100,100)
-                object.setMaximumSize(100,100)
-                self.piece_scroll_layout.addWidget(object)
+            # Initialize image
+            self.image = QLabel()
+            self.image.setPixmap(QPixmap(f"{closet[closet_index].image_name}"))
+            self.image.setScaledContents(True)
+            self.image.setMaximumSize(150,150)
 
-            self.piece_scroll_area_contents.setLayout(self.piece_scroll_layout)
-            QScroller.grabGesture(self.piece_scroll.viewport(), QScroller.LeftMouseButtonGesture)
-            self.piece_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            self.piece_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-            self.piece_scroll.setWidgetResizable(False)
-            self.piece_scroll.setWidget(self.piece_scroll_area_contents)
-            self.piece_scroll.setMinimumHeight(140)
+            # Initialize name
+            self.label = QLabel(closet[closet_index].name)
 
-            self.piece_image = QPushButton(piece_name)
-            self.setLayout(QHBoxLayout())
-            self.layout().addWidget(self.piece_image)
-            self.layout().addWidget(self.piece_scroll)
+            self.layout().addWidget(self.label,alignment=Qt.AlignTop|Qt.AlignCenter)
+            self.layout().addWidget(self.image,alignment=Qt.AlignTop|Qt.AlignCenter)
+
+    #        self.setStyleSheet("border-image : url({});".format(closet[closet_index].image_name))
+            self.setMinimumSize(170,190)
+            self.setMaximumSize(170,190)
+
+    class outfit_button(QPushButton):
+        def __init__(self, outfit_index, parent=None):
+            super().__init__(parent)
+
+            self.setLayout(QVBoxLayout())
+
+            # ANDREWTODO4 i havent tested it out so prob wait for me, but this is what making outfit button should look like
+            self.top_image = QLabel()
+            self.top_image.setPixmap(QPixmap(f"{outfit[outfit_index].top_piece.image_name}"))
+            self.top_image.setScaledContents(True)
+            self.top_image.setMaximumSize(150,150)
+
+            self.bottom_image = QLabel()
+            self.bottom_image.setPixmap(QPixmap(f"{outfit[outfit_index].bottom_piece.image_name}"))
+            self.bottom_image.setScaledContents(True)
+            self.bottom_image.setMaximumSize(150,150)
+
+            self.shoe_image = QLabel()
+            self.shoe_image.setPixmap(QPixmap(f"{outfit[outfit_index].shoe_piece.image_name}"))
+            self.shoe_image.setScaledContents(True)
+            self.shoe_image.setMaximumSize(150,150)
+
+            # Initialize name
+            self.label = QLabel(closet[closet_index].name)
+
+            self.layout().addWidget(self.label,alignment=Qt.AlignTop|Qt.AlignCenter)
+            self.layout().addWidget(self.top_image,alignment=Qt.AlignTop|Qt.AlignCenter)
+            self.layout().addWidget(self.bottom_image,alignment=Qt.AlignTop|Qt.AlignCenter)
+            self.layout().addWidget(self.shoe_image,alignment=Qt.AlignTop|Qt.AlignCenter)
+
+            self.setMinimumSize(500,190)
+            self.setMaximumSize(500,190) #maybe 470
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        # Setup keyboard
+        self.keyboard = Keyboard()
 
-        self.title = QLabel("NEW OUTFIT DETAILS")
-        self.title.setFont(QFont("Sans Serif",32))
+        # Setup RFID
+        self.rfid_reader = RFIDReader("/dev/ttyACM0", 115200)
+        self.rfid_reader.rfid_detected.connect(self.on_rfid_detected)
+        self.rfid_reader.start()
 
-        self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Name")
+        # Construct pages
+        self.item_main_page = Item_Main_Page()
+        self.item_register_page = Item_Register_Page()
+        self.item_edit_page = Item_Edit_Page()
+        self.camera_page = Camera_Page()
+        self.outfit_main_page = Outfit_Main_Page()
+        self.outfit_register_page = Outfit_Register_Page()
 
-        self.top_piece_bar = self.clothing_piece_bar("top")
-        self.bottom_piece_bar = self.clothing_piece_bar("bottom")
-        self.shoe_piece_bar = self.clothing_piece_bar("shoe")
+        # Give pages parent functions
+        # FLAG
+        self.item_main_page.register_button.clicked.connect(self.go_item_register_page)
+        self.item_main_page.outfits_button.clicked.connect(self.go_outfit_main_page)
+        self.item_main_page.search_button.clicked.connect(self.generate_item_buttons)
+        self.item_main_page.search_bar.installEventFilter(self)
+        self.item_register_page.exit_button.clicked.connect(self.go_item_main_page)
+        self.item_register_page.camera_button.clicked.connect(self.go_camera_register_page)
+        self.item_register_page.confirm_button.clicked.connect(self.register_clothing)
+        self.item_register_page.id_input.installEventFilter(self)
+        self.item_register_page.name_input.installEventFilter(self)
+        self.item_register_page.tag_input.viewport().installEventFilter(self)
+        self.item_edit_page.camera_button.clicked.connect(self.go_camera_edit_page)
+        self.item_edit_page.confirm_button.clicked.connect(self.edit_clothing)
+        self.item_edit_page.delete_button.clicked.connect(self.delete_clothing)
+        self.item_edit_page.exit_button.clicked.connect(self.go_item_main_page)
+        self.camera_page.camera_button.clicked.connect(self.take_photo)
+        self.camera_page.back_button.clicked.connect(self.go_previous_page)
+        self.camera_page.qpicamera2.done_signal.connect(self.capture_done)
+        self.outfit_main_page.register_button.clicked.connect(self.go_outfit_register_page)
+        self.outfit_main_page.search_button.clicked.connect(self.generate_outfit_buttons)
+        self.outfit_main_page.clothes_button.clicked.connect(self.go_item_main_page)
+        #outfit search button
+        #outfit
+        #self.outfit_register_page.exit_button.clicked.connect(self.go_outfit_main_page)
 
-        self.tag_input = QPlainTextEdit()
-        self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
-#        self.tag_input.setMaximumHeight(50)
+        # Connect pages to stacked widget
+        self.addWidget(self.item_main_page)
+        self.addWidget(self.item_register_page)
+        self.addWidget(self.item_edit_page)
+        self.addWidget(self.camera_page)
+        self.addWidget(self.outfit_main_page)
+        self.addWidget(self.outfit_register_page)
 
-        self.confirm_button = QPushButton("Confirm New Outfit")
-        self.exit_button = QPushButton("Exit")
+    # ITEM MAIN PAGE FUNCTIONS
+    def generate_item_buttons(self):
+        value_count = 0
 
-        self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
-        self.layout.addWidget(self.name_input)
-        self.layout.addWidget(self.top_piece_bar)
-        self.layout.addWidget(self.bottom_piece_bar)
-        self.layout.addWidget(self.shoe_piece_bar)
-        self.layout.addWidget(self.tag_input)
-        self.layout.addWidget(self.confirm_button)
-        self.layout.addWidget(self.exit_button)
+        # Deletes existing item buttons
+        for i in reversed(range(self.item_main_page.main_scroll_layout.count())):
+            self.item_main_page.main_scroll_layout.itemAt(i).widget().setParent(None)
 
-        self.confirm_button.clicked.connect(self.register_clothing)
-        self.exit_button.clicked.connect(go_main_page)
+        search_term = self.item_main_page.search_bar.text()
 
+        for i in range(len(closet)):
+            if closet[i].contains(search_term):
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.setup_item_edit_page(item_index))
+                self.item_main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop|Qt.AlignCenter)
+                value_count += 1
+
+        self.item_main_page.main_scroll.updateGeometry()
+
+    # ITEM REGISTER PAGE FUNCTIONS
     def register_clothing(self):
-        id = self.id_input.text()
-        name = self.name_input.text()
-        tags = self.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
+        id = self.item_register_page.id_input.text()
+        name = self.item_register_page.name_input.text()
+        tags = self.item_register_page.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
         tags = [tag.strip() for tag in tags if tag.strip()]
 
-        # generate_image_name(), consider the count when loading??
-        #ANDREW TODO if overlapping any
-        if id not in register_page.id_list:   # True flag is temp
-            register_page.id_list.append(id)
-            image = f"image_{register_page.image_number}.jpg" #ANDREW TODO, automatic image name scheme
-            register_page.image_number += 1
-            closet.append(input_clothing(closet, id, name, image, tags)) #ANDREW TODO input_clothing also takes tag string
+        if Clothing.check_existing_id(closet, id) == False:   # True flag is temp
+            image = f"image_{self.item_register_page.image_number}.jpg"
+            self.item_register_page.image_number += 1
+            input_clothing(closet, id, name, image, tags)
 
-            self.confirm_button.setText("Confirm")
+            self.item_register_page.confirm_button.setText("Confirm")
 
-            sort_closet() #ANDREW2 TODO, sort by color and also assign led number
-            reset_register_page()
-            go_main_page()
+            self.sort_closet(closet)
+            self.reset_item_register_page()
+            self.go_item_main_page()
         else:
 
             self.confirm_button.setText("Confirm (Error: ID already taken)")
+    def reset_item_register_page(self):
+        self.item_register_page.id_input.setText("")
+        self.item_register_page.name_input.setText("")
+        self.item_register_page.image_preview.setPixmap(QPixmap('Item_Images/placeholder_shirt.png'))
+        self.item_register_page.tag_input.setPlainText("")
 
+    def sort_closet(self,closet):
+        sort_by_color(closet)
+        assign_led(closet)
 
-class RFIDReader(QThread):
-    rfid_detected = pyqtSignal(str)
+    def on_rfid_detected(self, rfid_data):
+        print(rfid_data)
 
-    def __init__(self, port, baud_rate):
-        super().__init__()
-        self.port = port
-        self.baud_rate = baud_rate
-        self.serial_port = QSerialPort()
-        self.running = False
+        curr_index = self.currentIndex()
+        if  curr_index == Page.ITEM_MAIN or curr_index == Page.ITEM_REGISTER:
+            self.item_register_page.id_input.setText(rfid_data)
+            self.go_item_register_page()
 
-    def run(self):
-        self.serial_port.setPortName(self.port)
-        self.serial_port.setBaudRate(self.baud_rate)
-        if self.serial_port.open(QSerialPort.ReadOnly):
-            self.serial_port.setDataTerminalReady(True)  # Set DTR
-            print(f"Successfully opened port {self.port}")
-            self.running = True
-            while self.running:
-                if self.serial_port.waitForReadyRead(100):
-                    data = self.serial_port.readAll()
-                    rfid_data = data.data().decode().strip()
-                    print(f"Raw data received: {rfid_data}")
-                    if rfid_data:
-                        self.rfid_detected.emit(rfid_data)
+    # ITEM EDIT PAGE FUNCTIONS
+    def setup_item_edit_page(self, item_index):
+        item = closet[item_index]
+        self.item_edit_page.closet_index = item_index
+
+        self.item_edit_page.id_input.setText(item.ID)
+        self.item_edit_page.name_input.setText(item.name)
+        self.item_edit_page.image_preview.setPixmap(QPixmap(f"{item.image_name}"))
+        self.item_edit_page.image_preview.setScaledContents(True)
+        self.item_edit_page.image_preview.setMaximumSize(100,100)
+
+        tag_input_text = ""
+        for tag in item.details:
+            tag_input_text += f"{tag}\n"
+
+        self.item_edit_page.tag_input.setPlainText(tag_input_text)
+
+        self.go_item_edit_page()
+
+    def edit_clothing(self):
+
+        id = self.item_edit_page.id_input.text()
+        name = self.item_edit_page.name_input.text()
+        tags = self.item_edit_page.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
+        tags = [tag.strip() for tag in tags if tag.strip()]
+        image = f"image_{self.item_register_page.image_number}.jpg"
+
+        update_clothes(closet, id, name, image, tags)
+        """
+        #ANDREW4 TODO, update based on given index, not ID, sorry i forgot to put it here
+
+        closet_index = self.item_edit_page.closet_index
+        update_clothes(closet, closet_index, id, name, image, tags)
+        """
+
+        self.item_edit_page.confirm_button.setText("Confirm")
+
+        self.sort_closet(closet)
+        self.reset_item_register_page()
+        self.go_item_main_page()
+
+    def delete_clothing(self):
+        """
+        #ANDREW4 TODO
+        closet_index = self.item_edit_page.closet_index
+        delete_clothing(closet, closet_index) <- idk if this is right, maybe it is
+        """
+
+    # CAMERA PAGE FUNCTIONS
+    def take_photo(self):
+#       qpicamera2.show()
+        self.camera_page.camera_button.setEnabled(False)
+        self.camera_page.cfg = self.camera_page.picam2.create_still_configuration()
+
+        if(self.camera_page.new_image):
+            self.camera_page.picam2.switch_mode_and_capture_file(self.camera_page.cfg, f"image_{self.item_register_page.image_number}.jpg", signal_function=self.camera_page.qpicamera2.signal_done)
         else:
-            print(f"Failed to open port {self.port}. Error: {self.serial_port.error()}")
+            self.camera_page.picam2.switch_mode_and_capture_file(self.camera_page.cfg, f"{closet[self.item_edit_page.closet_index].image_name}", signal_function=self.camera_page.qpicamera2.signal_done)
 
-    def stop(self):
-        self.running = False
-        if self.serial_port.isOpen():
-            self.serial_port.close()
+    def capture_done(self,job):
+        self.camera_page.result = self.camera_page.picam2.wait(job)
+        self.camera_page.camera_button.setEnabled(True)
 
-def on_rfid_detected(rfid_data):
-    print(rfid_data)
+        if(self.camera_page.new_image):
+            self.item_register_page.image_preview.setPixmap(QPixmap(f"image_{self.item_register_page.image_number}.jpg"))
+            self.go_item_register_page()
+        else:
+            self.item_edit_page.image_preview.setPixmap(QPixmap(f"closet[self.item_edit_page.closet_index].image_name"))
+            self.go_item_edit_page()
 
-    curr_index = stacked_widget.currentIndex()
-    if  curr_index == Page.MAIN or curr_index == Page.REGISTER:
-        register_page.id_input.setText(rfid_data)
-        go_register_page()
+    def go_previous_page(self):
+        if(self.camera_page.new_image):
+            self.go_item_register_page()
+        else:
+            self.go_item_edit_page()
 
+    # OUTFIT MAIN PAGE FUNCTIONS
+    def generate_outfit_buttons(self):
+        value_count = 0
+
+        # Deletes existing item buttons
+        for i in reversed(range(self.item_outfit_page.main_scroll_layout.count())):
+            self.outfit_main_page.main_scroll_layout.itemAt(i).widget().setParent(None)
+
+        search_term = self.outfit_main_page.search_bar.text()
+
+        for i in range(len(closet)):
+            if outfit[i].contains(search_term): #ANDREW4 TODO outfit[] currently nothing
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.setup_outfit_edit_page(item_index))
+                self.outfit_main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop|Qt.AlignCenter)
+                value_count += 1
+
+        self.outfit_main_page.main_scroll.updateGeometry()
+
+    # OUTFIT REGISTER PAGE FUNCTIONS
+    def generate_outfit_selection_buttons(self):
+        #ANDREW4 TODO, set up this code, generates when launching outfit register page
+
+        #iterate through clothing, im using 1 for hardcoded example
+        i = 1
+
+        # if clothing item has "top"
+
+        newButton = self.clothing_button(i)
+        newButton.clicked.connect(lambda state, item_index = i: self.set_as_top(item_index))
+        self.outfit_register_page.top_piece_bar.piece_scroll_layout.addWidget(newButton)
+        # else if clothing item has "bottom"
+        newButton = self.clothing_button(i)
+        newButton.clicked.connect(lambda state, item_index = i: self.set_as_bottom(item_index))
+        self.outfit_register_page.bottom_piece_bar.piece_scroll_layout.addWidget(newButton)
+        # else if clothing item has "shoe"
+        newButton = self.clothing_button(i)
+        newButton.clicked.connect(lambda state, item_index = i: self.set_as_shoe(item_index))
+        self.outfit_register_page.shoe_piece_bar.piece_scroll_layout.addWidget(newButton)
+
+    def set_as_top(self, item_index):
+        self.outfit_register_page.top_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
+        self.outfit_register_page.top_piece_bar.piece_image.setScaledContents(True)
+        self.outfit_register_page.top_piece_bar.piece_image.setMaximumSize(100,100)
+        self.outfit_register_page.selected_top = item_index
+
+    def set_as_bottom(self, item_index):
+        self.outfit_register_page.bottom_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
+        self.outfit_register_page.bottom_piece_bar.piece_image.setScaledContents(True)
+        self.outfit_register_page.bottom_piece_bar.piece_image.setMaximumSize(100,100)
+        self.outfit_register_page.selected_bottom = item_index
+
+    def set_as_shoe(self, item_index):
+        self.outfit_register_page.shoe_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
+        self.outfit_register_page.shoe_piece_bar.piece_image.setScaledContents(True)
+        self.outfit_register_page.shoe_piece_bar.piece_image.setMaximumSize(100,100)
+        self.outfit_register_page.selected_shoe = item_index
+
+    # OUTFIT EDIT PAGE FUNCTIONS
+
+    # Stacked widget traversing functions
+    def go_item_main_page(self):
+        self.keyboard.KB_Off()
+        self.generate_item_buttons()
+        self.setCurrentIndex(Page.ITEM_MAIN)
+
+    def go_item_register_page(self):
+        self.keyboard.KB_Off()
+        self.setCurrentIndex(Page.ITEM_REGISTER)
+
+    def go_item_edit_page(self):
+        self.keyboard.KB_Off()
+        self.setCurrentIndex(Page.ITEM_EDIT)
+
+    def go_camera_register_page(self):
+        self.keyboard.KB_Off()
+        self.camera_page.new_image = True
+        self.setCurrentIndex(Page.CAMERA)
+
+    def go_camera_edit_page(self):
+        self.keyboard.KB_Off()
+        self.setCurrentIndex(Page.CAMERA)
+
+    def go_outfit_main_page(self):
+        self.keyboard.KB_Off()
+        self.setCurrentIndex(Page.OUTFIT_MAIN)
+
+    def go_outfit_register_page(self):
+        self.keyboard.KB_Off()
+        self.generate_outfit_selection_buttons()
+        self.setCurrentIndex(Page.OUTFIT_REGISTER)
+
+    def go_outfit_edit_page(self):
+        self.keyboard.KB_Off()
+        self.setCurrentIndex(Page.OUTFIT_EDIT)
+
+
+
+    # This function runs when a lineEdit is clicked
+    def eventFilter(self,obj, event):
+        #Turns on KB
+        if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and self.keyboard.KB_Active == False:
+            self.keyboard.KB_On()
+            return True
+        #Turns off KB
+        elif event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and self.keyboard.KB_Active == True:
+            self.keyboard.KB_Off()
+            return True
+
+        return super().eventFilter(obj, event)
+
+    # This function runs when the window is closed
+    def closeEvent(self, event):
+        self.keyboard.KB_Off() # Turn off keyboard
+        save_closet(closet, save_file)
+
+#ANDREW4 TODO debug button on outfit main if u need it
+def debug_function():
+    print("hi")
 
 if __name__ == "__main__":
     app = QApplication([])
 
-    ### SPI STUFF
-    spi = board.SPI()
-    pixels = neopixel.NeoPixel_SPI(spi, 60, pixel_order=neopixel.GRB, auto_write=False)
-    pixels.fill(0x000000)
-    pixels.show()
+    stacked_widget = Main_Stack()
+    load_closet(closet, save_file)
+    stacked_widget.go_item_main_page()
 
-    # Initialize pages on stacked widget
-    main_page = main_page()
-    register_page = register_page()
-    camera_page = camera_page()
-    edit_page = edit_page()
-    outfit_main_page = outfit_main_page()
-    outfit_register_page = outfit_register_page()
-
-    stacked_widget =  QStackedWidget()
-    stacked_widget.addWidget(main_page)
-    stacked_widget.addWidget(register_page)
-    stacked_widget.addWidget(edit_page)
-    stacked_widget.addWidget(camera_page)
-    stacked_widget.addWidget(outfit_main_page)             #matches main_page
-    stacked_widget.addWidget(outfit_register_page)
-    #stacked_widget.addWidget(outfit_edit_page)
-
-    ### RFID STUFF
-    port = "/dev/ttyACM0"  # Hardcoded Arduino port
-    rfid_reader = RFIDReader(port, 115200)
-    rfid_reader.rfid_detected.connect(on_rfid_detected)
-    rfid_reader.start()
-    ### RFID STUFF
-
-    stacked_widget.setGeometry(200, 0, 600, 500) #600, 1024)
-
-    stacked_widget.setCurrentIndex(Page.MAIN) #TODO replace to go_main_page when done
-    stacked_widget.setWindowTitle("Inside the Closet")
     stacked_widget.show()
-
     stacked_widget.showMaximized()
+
+
+    debug_button = QPushButton("DEBUG")
+    debug_button.clicked.connect(debug_function)
+    stacked_widget.outfit_main_page.layout.addWidget(debug_button)
+
     app.exec()
 
+
+
+'''
+def light_LED():
+    pixels[0] = 0xFF0000
+    pixels.show()
+
+### SPI STUFF
+spi = board.SPI()
+pixels = neopixel.NeoPixel_SPI(spi, 60, pixel_order=neopixel.GRB, auto_write=False)
+pixels.fill(0x000000)
+pixels.show()
+'''

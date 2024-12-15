@@ -1,0 +1,19 @@
+CLOTHING ITEMS:
+Clothing ID: ECFFF75D
+Clothing Name: rei's pants
+- orange
+- pants
+Image Name: image_1.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 1
+
+Clothing ID: FCCF0AD9
+Clothing Name: rei's shirt
+- green
+- shirt
+Image Name: image_0.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 2
+
