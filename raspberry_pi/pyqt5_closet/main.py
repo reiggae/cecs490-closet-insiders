@@ -9,7 +9,28 @@ from picamera2.previews.qt import QGlPicamera2
 from picamera2 import Picamera2
 from enum import IntEnum
 
+import sys
+import time
+import board
+import neopixel_spi as neopixel
+
+import subprocess
+
 from closet_inventory import *
+
+class keyboard():
+    def __init__(self):
+        self.KB_Active = False
+
+    def KB_On(self):
+        self.KB_Active = True
+        subprocess.Popen(["bash", "KB_Start.sh"])
+
+    def KB_Off(self):
+        self.KB_Active = False
+        subprocess.Popen(["bash", "KB_Off.sh"])
+
+keyboard = keyboard()
 
 class Page(IntEnum):
     MAIN = 0
@@ -24,6 +45,11 @@ closet = []
 
 def sort_closet(): #ANDREW2 TODO
     pass
+
+def light_LED():
+    pixels[0] = 0xFF0000
+    pixels.show()
+
 
 class clothing_button(QPushButton):
     def __init__(self, closet_index, parent=None):
@@ -86,27 +112,34 @@ def setup_edit_page(item_index):
     go_edit_page()
 
 def go_main_page():
+    keyboard.KB_Off()
     generate_item_buttons()
     stacked_widget.setCurrentIndex(Page.MAIN)
 
 def go_register_page():
+    keyboard.KB_Off()
     stacked_widget.setCurrentIndex(Page.REGISTER)
 
 def go_edit_page():
+    keyboard.KB_Off()
     stacked_widget.setCurrentIndex(Page.EDIT)
 
 def go_register_camera_page():
+    keyboard.KB_Off()
     camera_page.new_image = True
     stacked_widget.setCurrentIndex(Page.CAMERA)
 
 def go_edit_camera_page():
+    keyboard.KB_Off()
     camera_page.new_image = False
     stacked_widget.setCurrentIndex(Page.CAMERA)
 
 def go_outfit_main_page():
+    keyboard.KB_Off()
     stacked_widget.setCurrentIndex(Page.OUTFIT_MAIN)
 
 def go_outfit_register_page():
+    keyboard.KB_Off()
     stacked_widget.setCurrentIndex(Page.OUTFIT_REGISTER)
 
 class main_page(QWidget):
@@ -122,6 +155,9 @@ class main_page(QWidget):
 
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Search Bar")
+        #KEVIN
+        self.search_bar.installEventFilter(self)
+
 
         self.search_button = QPushButton("Search")
 
@@ -138,7 +174,9 @@ class main_page(QWidget):
                 object = QPushButton(str(row))
                 object.setMinimumSize(170,170)
                 object.setMaximumSize(170,170)
+                object.clicked.connect(light_LED)
                 self.main_scroll_layout.addWidget(object,row,col)
+
 
         self.scroll_area_contents.setLayout(self.main_scroll_layout)
         QScroller.grabGesture(self.main_scroll.viewport(), QScroller.LeftMouseButtonGesture)
@@ -162,6 +200,20 @@ class main_page(QWidget):
         self.search_button.clicked.connect(generate_item_buttons)
         self.outfits_button.clicked.connect(go_outfit_main_page)
 
+    def eventFilter(self,obj, event):
+        #Check for events on lineEdit
+
+        #Turns on KB
+        if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == False:
+            keyboard.KB_On()
+            return True
+        #Turns off KB
+        elif event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == True:
+            keyboard.KB_Off()
+            return True
+
+        return super().eventFilter(obj, event)
+
 class register_page(QWidget):
     image_number = 0
     id_list = []
@@ -177,9 +229,11 @@ class register_page(QWidget):
 
         self.id_input = QLineEdit()
         self.id_input.setPlaceholderText("ID Number (scan to auto fill)")
+        self.id_input.installEventFilter(self)
 
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Name")
+        self.name_input.installEventFilter(self)
 
         self.image_preview = QLabel()
         self.image_preview.setPixmap(QPixmap('placeholder_shirt.png'))
@@ -188,9 +242,10 @@ class register_page(QWidget):
 
         self.camera_button = QPushButton("Open Camera")
 
-        self.tag_input = QPlainTextEdit()
+        self.tag_input = QTextEdit()#QPlainTextEdit()
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
-#        self.tag_input.setMaximumHeight(50)
+        self.tag_input.viewport().installEventFilter(self)
+        #        self.tag_input.setMaximumHeight(50)
 
         self.confirm_button = QPushButton("Confirm New Item")
         self.exit_button = QPushButton("Exit")
@@ -207,6 +262,19 @@ class register_page(QWidget):
         self.camera_button.clicked.connect(go_register_camera_page)
         self.confirm_button.clicked.connect(self.register_clothing)
         self.exit_button.clicked.connect(go_main_page)
+
+    def eventFilter(self,obj, event):
+        #Check for events on lineEdit
+        #Turns on KB
+        if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == False:
+            keyboard.KB_On()
+            return True
+        #Turns off KB
+        elif event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and keyboard.KB_Active == True:
+            keyboard.KB_Off()
+            return True
+
+        return super().eventFilter(obj, event)
 
     def register_clothing(self):
         id = self.id_input.text()
@@ -547,6 +615,12 @@ def on_rfid_detected(rfid_data):
 if __name__ == "__main__":
     app = QApplication([])
 
+    ### SPI STUFF
+    spi = board.SPI()
+    pixels = neopixel.NeoPixel_SPI(spi, 60, pixel_order=neopixel.GRB, auto_write=False)
+    pixels.fill(0x000000)
+    pixels.show()
+
     # Initialize pages on stacked widget
     main_page = main_page()
     register_page = register_page()
@@ -577,6 +651,6 @@ if __name__ == "__main__":
     stacked_widget.setWindowTitle("Inside the Closet")
     stacked_widget.show()
 
-    stacked_widget.showFullScreen()
+    stacked_widget.showMaximized()
     app.exec()
 
