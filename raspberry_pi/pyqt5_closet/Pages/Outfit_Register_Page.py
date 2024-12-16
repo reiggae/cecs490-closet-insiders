@@ -42,11 +42,11 @@ class Outfit_Register_Page(QWidget):
         self.title.setFont(QFont("Sans Serif",32))
 
         self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Name")
+        self.name_input.setPlaceholderText("Outfit Name")
 
-        self.top_piece_bar = self.clothing_piece_bar("top")
-        self.bottom_piece_bar = self.clothing_piece_bar("bottom")
-        self.shoe_piece_bar = self.clothing_piece_bar("shoe")
+        self.top_piece_bar = self.clothing_piece_bar("None")
+        self.bottom_piece_bar = self.clothing_piece_bar("None")
+        self.shoe_piece_bar = self.clothing_piece_bar("None")
 
         self.tag_input = QPlainTextEdit()
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")

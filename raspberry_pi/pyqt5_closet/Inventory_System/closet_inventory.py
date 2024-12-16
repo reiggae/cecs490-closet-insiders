@@ -327,6 +327,7 @@ def hanger_system(closet, status):
     print(f"Clothing with ID {chosen_id} not found.")
 
 def map_clothes_to_leds(num_clothes, num_leds):
+    #ANDREW5 TODO
     # Mapping from clothes to LEDs
     constant = num_clothes / num_leds
     clothes_to_leds = {}

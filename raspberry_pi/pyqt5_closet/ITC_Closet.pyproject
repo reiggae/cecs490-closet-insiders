@@ -1,3 +1,3 @@
 {
-    "files": ["Item_Images/espongbob.png","Pages/Outfit_Main_Page.py","Pages/Item_Edit_Page.py","Keyboard/Keyboard.py","Pages/Outfit_Edit_Page.py","Keyboard/KB_Off.sh","main.py","Pages/Item_Main_Page.py","Pages/Item_Register_Page.py","Inventory_System/closet_inventory.py","Pages/Camera_Page.py","Pages/Outfit_Register_Page.py","Keyboard/KB_Start.sh","Inventory_System/RFIDReader.py"]
+    "files": ["Pages/Outfit_Register_Page.py","Keyboard/KB_Start.sh","Pages/Item_Register_Page.py","Inventory_System/closet_inventory.py","Pages/Item_Main_Page.py","Keyboard/Keyboard.py","Pages/Item_Edit_Page.py","Inventory_System/RFIDReader.py","main.py","Pages/Outfit_Edit_Page.py","Keyboard/KB_Off.sh","Pages/Camera_Page.py","Pages/Outfit_Main_Page.py","Item_Images/espongbob.png","Item_Images/placeholder_shirt.png"]
 }

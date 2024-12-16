@@ -1,0 +1,45 @@
+CLOTHING ITEMS:
+Clothing ID: 7CD9BD5D
+Clothing Name: Shirt 1
+- Red
+- Top
+Image Name: Item_Images/image_0.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 1
+
+Clothing ID: ECFFF75D
+Clothing Name: Shirt 2
+- Orange
+- Top
+Image Name: Item_Images/image_3.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 2
+
+Clothing ID: CCF0AD9
+Clothing Name: Shoe 1
+- Green
+- Shoe
+Image Name: Item_Images/image_2.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 3
+
+Clothing ID: 57B7ABDB
+Clothing Name: Pants 1
+- Blue
+- Bottom
+Image Name: Item_Images/image_1.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 4
+
+Clothing ID: 2CA1BD5D
+Clothing Name: Hat 1
+- White
+Image Name: Item_Images/image_4.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 5
+
