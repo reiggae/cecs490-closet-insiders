@@ -1,0 +1,3 @@
+{
+    "files": ["main.py","Inventory_System/RFIDReader.py","Pages/Outfit_Edit_Page.py","Pages/Item_Edit_Page.py","Keyboard/KB_Start.sh","Pages/Item_Main_Page.py","Inventory_System/closet_inventory.py","Item_Images/espongbob.png","Pages/Outfit_Register_Page.py","Pages/Outfit_Main_Page.py","Pages/Item_Register_Page.py","Keyboard/Keyboard.py","Keyboard/KB_Off.sh","Pages/Camera_Page.py","Inventory_System/outfit.py"]
+}
