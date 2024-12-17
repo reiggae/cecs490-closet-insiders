@@ -20,9 +20,11 @@ class Outfit_Edit_Page(QWidget):
             self.piece_scroll.setWidgetResizable(False)
             self.piece_scroll_layout.setSizeConstraint(QLayout.SetFixedSize)
             self.piece_scroll.setWidget(self.piece_scroll_area_contents)
-            self.piece_scroll.setMinimumHeight(140)
+            self.piece_scroll.setMinimumHeight(250)
 
             self.piece_image = QLabel(piece_name)
+            self.piece_image.setScaledContents(True)
+            self.piece_image.setMaximumSize(100,100)
             self.parent_layout = QHBoxLayout()
             self.setLayout(self.parent_layout)
             self.parent_layout.addWidget(self.piece_image)
@@ -33,6 +35,7 @@ class Outfit_Edit_Page(QWidget):
 
         self.outfit_index = 0
 
+        self.selected_extra = 0
         self.selected_top = 0
         self.selected_bottom = 0
         self.selected_shoe = 0
@@ -40,17 +43,21 @@ class Outfit_Edit_Page(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.title = QLabel("EDITING OUTFIT")
+        self.title = QLabel("OUTFIT DETAILS")
         self.title.setFont(QFont("Sans Serif",32))
 
         self.delete_button = QPushButton("Delete Outfit")
+        self.delete_button.setStyleSheet("color: red")
+
+
 
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Outfit Name")
 
-        self.top_piece_bar = self.clothing_piece_bar("None")
-        self.bottom_piece_bar = self.clothing_piece_bar("None")
-        self.shoe_piece_bar = self.clothing_piece_bar("None")
+        self.extra_piece_bar = self.clothing_piece_bar("No Extra               ")
+        self.top_piece_bar = self.clothing_piece_bar("No Top               ")
+        self.bottom_piece_bar = self.clothing_piece_bar("No Bottom               ")
+        self.shoe_piece_bar = self.clothing_piece_bar("No Shoe               ")
 
         self.tag_input = QPlainTextEdit()
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
@@ -63,6 +70,7 @@ class Outfit_Edit_Page(QWidget):
         self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
         self.layout.addWidget(self.delete_button)
         self.layout.addWidget(self.name_input)
+        self.layout.addWidget(self.extra_piece_bar)
         self.layout.addWidget(self.top_piece_bar)
         self.layout.addWidget(self.bottom_piece_bar)
         self.layout.addWidget(self.shoe_piece_bar)

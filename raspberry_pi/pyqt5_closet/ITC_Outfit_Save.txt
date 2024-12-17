@@ -1,0 +1,24 @@
+OUTFITS:
+Outfit Name: the demo fit
+Top: None
+Top: 3
+Bottom: 0
+Shoe: 1
+- eric
+- presentation
+Outfit Name: hungy
+Top: None
+Top: 2
+Bottom: 5
+Shoe: 4
+- awesome
+Outfit Name: no shirt
+Top: None
+Top: None
+Bottom: 5
+Shoe: 1
+Outfit Name: Eevee Hat Fit
+Top: None
+Top: 3
+Bottom: 0
+Shoe: 1

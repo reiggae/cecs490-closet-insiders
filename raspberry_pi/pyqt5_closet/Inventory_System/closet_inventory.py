@@ -25,7 +25,7 @@ class Clothing:
         self.image_name = ""
         self.ID = ""
         self.details = []
-        self.is_checked_in = False
+        self.is_checked_in = True
         self.has_hanger = True
         self.led_number = ""
         self.led_on = False
@@ -71,7 +71,9 @@ def input_clothing(closet, manual_id = "", manual_name = "", manual_image = "", 
 
     clothing.details = manual_detail
     for clothing in closet:
-        if clothing.contains("no hanger"):
+        if clothing.contains("hanger"):
+            clothing.has_hanger = True
+        else:
             clothing.has_hanger = False
 
     clothing.image_name = manual_image
@@ -97,10 +99,13 @@ def print_closet(closet):
 # Function to update clothing
 def update_clothes(closet, index, id, name, image, tags):
     clothing = closet[index]
-
     clothing.ID = id
     clothing.name = name
     clothing.details = tags
+    if clothing.contains("hanger"):
+        clothing.has_hanger = True
+    else:
+        clothing.has_hanger = False
 
 
 # Search Function
@@ -207,7 +212,7 @@ def load_closet(closet, filename):
                 clothes.name = line.split(": ")[1]
             elif line.startswith("- "):
                 clothes.details.append(line[2:])
-            elif "Clothing Status:" in line:
+            elif "Checked in Status:" in line:
                 clothes.is_checked_in = (line.split(": ")[1].strip().lower() == 'true')
             elif "Image Name:" in line:
                 clothes.image_name = line.split(": ")[1]
@@ -222,7 +227,11 @@ def load_closet(closet, filename):
         closet.append(clothes)
     print(f"Closet loaded from {filename}")
 
+    if(image_number == None):
+        image_number = 0
+
     return int(image_number)
+
 
 
 def get_color_from_detail(details):

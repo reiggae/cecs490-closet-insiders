@@ -20,9 +20,11 @@ class Outfit_Register_Page(QWidget):
             self.piece_scroll.setWidgetResizable(False)
             self.piece_scroll_layout.setSizeConstraint(QLayout.SetFixedSize)
             self.piece_scroll.setWidget(self.piece_scroll_area_contents)
-            self.piece_scroll.setMinimumHeight(140)
+            self.piece_scroll.setMinimumHeight(250) #140
 
             self.piece_image = QLabel(piece_name)
+            self.piece_image.setScaledContents(True)
+            self.piece_image.setMaximumSize(100,100)
             self.parent_layout = QHBoxLayout()
             self.setLayout(self.parent_layout)
             self.parent_layout.addWidget(self.piece_image)
@@ -31,6 +33,7 @@ class Outfit_Register_Page(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.select_extra = 0
         self.selected_top = 0
         self.selected_bottom = 0
         self.selected_shoe = 0
@@ -44,19 +47,23 @@ class Outfit_Register_Page(QWidget):
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Outfit Name")
 
-        self.top_piece_bar = self.clothing_piece_bar("None")
-        self.bottom_piece_bar = self.clothing_piece_bar("None")
-        self.shoe_piece_bar = self.clothing_piece_bar("None")
+        self.random_button = QPushButton("Randomize!")
+
+        self.extra_piece_bar =  self.clothing_piece_bar("No Extra               ")
+        self.top_piece_bar =    self.clothing_piece_bar("No Top               ")
+        self.bottom_piece_bar = self.clothing_piece_bar("No Bottom               ")
+        self.shoe_piece_bar =   self.clothing_piece_bar("No Shoes               ")
 
         self.tag_input = QPlainTextEdit()
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
-#        self.tag_input.setMaximumHeight(50)
 
         self.confirm_button = QPushButton("Confirm New Outfit")
         self.exit_button = QPushButton("Exit")
 
         self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
         self.layout.addWidget(self.name_input)
+        self.layout.addWidget(self.random_button)
+        self.layout.addWidget(self.extra_piece_bar)
         self.layout.addWidget(self.top_piece_bar)
         self.layout.addWidget(self.bottom_piece_bar)
         self.layout.addWidget(self.shoe_piece_bar)

@@ -1,9 +1,0 @@
-OUTFITS:
-Outfit Name: rei fit
-Top: 2
-Bottom: 4
-Shoe: 1
-Outfit Name: change
-Top: 5
-Bottom: 0
-Shoe: 3

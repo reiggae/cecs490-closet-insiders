@@ -5,6 +5,7 @@ import os
 class Outfit:
     def __init__(self):
         self.name = ""
+        self.extra = None
         self.top = None
         self.bottom = None
         self.shoe = None
@@ -12,6 +13,7 @@ class Outfit:
 
     def print(self):
         print(f"Outfit Name: {self.name}")
+        print(f"Extra Name: {self.extra.name}")
         print(f"Top Name: {self.top.name}")
         print(f"Bottom Name: {self.bottom.name}")
         print(f"Shoe Name:  {self.shoe.name}")
@@ -30,9 +32,10 @@ class Outfit:
 
 
 
-def input_outfit(outfits,name, top, bottom, shoe, tags):
+def input_outfit(outfits, name, extra, top, bottom, shoe, tags):
     outfit = Outfit()
     outfit.name = name
+    outfit.extra = extra
     outfit.top = top
     outfit.bottom = bottom
     outfit.shoe = shoe
@@ -46,26 +49,44 @@ def print_outfits(outfits):
         print(f"Outfit {i + 1}:")
         outfit.print()
 
-def update_outfit(outfits, outfit_index, name, top, bottom, shoe, tags):
+def update_outfit(outfits, outfit_index, name, extra, top, bottom, shoe, tags):
     outfit = outfits[outfit_index]
 
     outfit.name = name
+    outfit.extra = extra
     outfit.top = top
     outfit.bottom = bottom
     outfit.shoe = shoe
     outfit.tags = tags
 
-def save_outfits(closet, outfits, filename): # print(closet.index(outfit.top))
+def save_outfits(closet, outfits, filename):
     with open(filename, 'w') as out_file:
             # Save clothing items
             out_file.write("OUTFITS:\n")
             for outfit in outfits:
                 out_file.write(f"Outfit Name: {outfit.name}\n")
-                top_index = closet.index(outfit.top)
+                if outfit.extra == None:
+                    extra_index = None
+                else:
+                    extra_index = closet.index(outfit.extra)
+                out_file.write(f"Top: {extra_index}\n")
+
+                if outfit.top == None:
+                    top_index = None
+                else:
+                    top_index = closet.index(outfit.top)
                 out_file.write(f"Top: {top_index}\n")
-                bottom_index = closet.index(outfit.bottom)
+
+                if outfit.bottom == None:
+                    bottom_index = None
+                else:
+                    bottom_index = closet.index(outfit.bottom)
                 out_file.write(f"Bottom: {bottom_index}\n")
-                shoe_index = closet.index(outfit.shoe)
+
+                if outfit.shoe == None:
+                    shoe_index = None
+                else:
+                    shoe_index = closet.index(outfit.shoe)
                 out_file.write(f"Shoe: {shoe_index}\n")
                 for tag in outfit.tags:
                     out_file.write(f"- {tag}\n")
@@ -89,15 +110,30 @@ def load_outfits(closet, outfits, filename):
                 outfit.name = line.split(": ")[1]
             elif line.startswith("- "):
                 outfit.tags.append(line[2:])
+            elif "Extra:" in line:
+                extra_index = line.split(": ")[1]
+                if extra_index == "None":
+                    outfit.extra = None
+                else:
+                    outfit.extra = closet[int(extra_index)]
             elif "Top:" in line:
                 top_index = line.split(": ")[1]
-                outfit.top = closet[int(top_index)]
+                if top_index == "None":
+                    outfit.top = None
+                else:
+                    outfit.top = closet[int(top_index)]
             elif "Bottom:" in line:
                 bottom_index = line.split(": ")[1]
-                outfit.bottom = closet[int(bottom_index)]
+                if bottom_index == "None":
+                    outfit.bottom = None
+                else:
+                    outfit.bottom = closet[int(bottom_index)]
             elif "Shoe:" in line:
                 shoe_index = line.split(": ")[1]
-                outfit.shoe = closet[int(shoe_index)]
+                if shoe_index == "None":
+                    outfit.shoe = None
+                else:
+                    outfit.shoe = closet[int(shoe_index)]
 
     if outfit.name:
         outfits.append(outfit)

@@ -42,6 +42,7 @@ class Outfit_Main_Page(QWidget):
         self.main_scroll.setWidgetResizable(False)
         self.main_scroll.setWidget(self.scroll_area_contents)
 
+        self.led_off_button = QPushButton("Turn Off All Lights")
         self.register_button = QPushButton("Register New Outfit")
         self.clothes_button = QPushButton("CLOTHES")
 
@@ -50,5 +51,6 @@ class Outfit_Main_Page(QWidget):
         self.layout.addWidget(self.search_bar)
         self.layout.addWidget(self.search_button)
         self.layout.addWidget(self.main_scroll)
+        self.layout.addWidget(self.led_off_button)
         self.layout.addWidget(self.register_button)
         self.layout.addWidget(self.clothes_button)

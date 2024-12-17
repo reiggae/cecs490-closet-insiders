@@ -21,6 +21,12 @@ class Item_Main_Page(QWidget):
 
         self.search_button = QPushButton("Search")
 
+        self.sort_select = QComboBox()
+        self.sort_select.addItem("Sort By Color")
+        self.sort_select.addItem("Sort By Alphabet")
+        self.sort_select.addItem("Sort By Type")
+        self.sort_select.addItem("No Sort")
+
         self.main_scroll = QScrollArea()
         self.scroll_area_contents = QWidget()
         self.main_scroll_layout = QGridLayout()
@@ -43,6 +49,7 @@ class Item_Main_Page(QWidget):
         self.main_scroll.setWidgetResizable(False)
         self.main_scroll.setWidget(self.scroll_area_contents)
 
+        self.led_off_button = QPushButton("Turn Off All Lights")
         self.register_button = QPushButton("Register New Item")
         self.outfits_button = QPushButton("OUTFITS")
 
@@ -50,7 +57,9 @@ class Item_Main_Page(QWidget):
         self.layout.addWidget(self.inventory_label, alignment = Qt.AlignTop|Qt.AlignCenter)
         self.layout.addWidget(self.search_bar)
         self.layout.addWidget(self.search_button)
+        self.layout.addWidget(self.sort_select)
         self.layout.addWidget(self.main_scroll)
+        self.layout.addWidget(self.led_off_button)
         self.layout.addWidget(self.register_button)
         self.layout.addWidget(self.outfits_button)
 
