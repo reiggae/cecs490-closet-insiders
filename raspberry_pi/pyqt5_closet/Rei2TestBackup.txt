@@ -1,0 +1,28 @@
+CLOTHING ITEMS:
+Clothing ID: 7CD9BD5D
+Clothing Name: shirt
+- red
+- top
+Image Name: Item_Images/image_0.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 0
+Current image number: 3
+Clothing ID: ECFFF75D
+Clothing Name: shoe
+- orange
+- shoe
+Image Name: Item_Images/image_2.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 5
+Current image number: 3
+Clothing ID: 178B0DAF
+Clothing Name: pants
+- purple
+- bottom
+Image Name: Item_Images/image_1.jpg
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 10
+Current image number: 3

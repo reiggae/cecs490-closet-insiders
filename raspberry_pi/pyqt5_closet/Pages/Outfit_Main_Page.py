@@ -23,16 +23,17 @@ class Outfit_Main_Page(QWidget):
         self.main_scroll = QScrollArea()
         self.scroll_area_contents = QWidget()
         self.main_scroll_layout = QGridLayout()
+        self.main_scroll_layout.setSizeConstraint(QLayout.SetFixedSize)
 
         #TEMP
-        row = 0
-        col = 0
-        for row in range(0,20):
-            for col in range(0,3):
-                object = QPushButton(str(row))
-                object.setMinimumSize(100,100)
-                object.setMaximumSize(100,100)
-                self.main_scroll_layout.addWidget(object,row,col)
+#        row = 0
+#        col = 0
+#        for row in range(0,20):
+#            for col in range(0,3):
+#                object = QPushButton(str(row))
+#                object.setMinimumSize(100,100)
+#                object.setMaximumSize(100,100)
+#                self.main_scroll_layout.addWidget(object,row,col)
 
         self.scroll_area_contents.setLayout(self.main_scroll_layout)
         QScroller.grabGesture(self.main_scroll.viewport(), QScroller.LeftMouseButtonGesture)

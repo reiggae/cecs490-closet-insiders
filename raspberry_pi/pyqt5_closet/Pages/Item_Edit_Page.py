@@ -12,8 +12,10 @@ class Item_Edit_Page(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.title = QLabel("EDITING")
+        self.title = QLabel("EDITING ITEM")
         self.title.setFont(QFont("Sans Serif",32))
+
+        self.delete_button = QPushButton("Delete Item")
 
         self.id_input = QLineEdit()
         self.id_input.setPlaceholderText("ID Number (scan to auto fill)")
@@ -32,11 +34,11 @@ class Item_Edit_Page(QWidget):
         self.tag_input.setPlaceholderText("Tag1\nTag2\n...")
 #        self.tag_input.setMaximumHeight(50)
 
+        self.locate_button = QPushButton("Locate")
         self.confirm_button = QPushButton("Confirm Changes")
         self.exit_button = QPushButton("Exit Without Changes")
 
-        self.locate_button = QPushButton("Locate")
-        self.delete_button = QPushButton("Delete Item")
+
 
         self.layout.addWidget(self.title, alignment = Qt.AlignTop|Qt.AlignCenter)
         self.layout.addWidget(self.delete_button)

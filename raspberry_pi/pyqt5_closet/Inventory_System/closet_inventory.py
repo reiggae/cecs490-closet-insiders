@@ -28,6 +28,7 @@ class Clothing:
         self.is_checked_in = False
         self.has_hanger = True
         self.led_number = ""
+        self.led_on = False
 	    
     # Function to print clothing details
     def print(self):
@@ -39,7 +40,7 @@ class Clothing:
             print(f"- {detail}")
         print(f"Status: {'checked in' if self.is_checked_in else 'checked out'}")
         print(f"It is {'on' if self.has_hanger else 'not on'} a hanger")
-        print(f"It is assigned to LED #: {self.led_number if self.has_hanger else 'N/A'}")
+        print(f"It is assigned to LED #: {self.led_number if self.has_hanger else '0'}")
         print()
 
     # Function to check if any detail contains the search term
@@ -56,30 +57,7 @@ class Clothing:
                 return True
         return False
 
-class Outfit:
-    def __init__(self):
-        self.outfit_name = ""
-        self.top = []
-        self.bottom = []
-        self.shoe = []
-        self.clothing_items = {}
 
-    def add_clothing_item(self, clothing_type, clothing_item):
-        self.clothing_items[clothing_type] = clothing_item
-
-    def remove_clothing_item(self, clothing_type):
-        if clothing_type in self.clothing_items:
-            del self.clothing_items[clothing_type]
-
-    def edit_clothing_item(self, clothing_type, new_clothing_item):
-        if clothing_type in self.clothing_items:
-            self.clothing_items[clothing_type] = new_clothing_item
-
-    def print_outfit(self):
-        print(f"Outfit Name: {self.outfit_name}")
-        for clothing_type, clothing_item in self.clothing_items.items():
-            print(f"{clothing_type}:")
-            clothing_item.print()
 
 def input_clothing(closet, manual_id = "", manual_name = "", manual_image = "", manual_detail = "", ser=None):
     clothing = Clothing() 
@@ -98,7 +76,9 @@ def input_clothing(closet, manual_id = "", manual_name = "", manual_image = "", 
 
     clothing.image_name = manual_image
     image_name_list.append(clothing.image_name)
-    #ANDREW3 TODO If a tag contains "No Hanger", change has_hanger to false
+
+    clothing.led_number = 0
+
     return clothing
     
 def remove_clothes(closet, index):
@@ -173,7 +153,7 @@ def switch_ids(closet, ser=None):
     else:
         print("One or both Clothing IDs are invalid.")
 # Function to save the closet to a file
-def save_closet(closet, filename):
+def save_closet(closet, number, filename):
     with open(filename, 'w') as out_file:
             # Save clothing items
             out_file.write("CLOTHING ITEMS:\n")
@@ -185,7 +165,8 @@ def save_closet(closet, filename):
                 out_file.write(f"Image Name: {clothes.image_name}\n")
                 out_file.write(f"Checked in Status: {clothes.is_checked_in}\n")
                 out_file.write(f"Clothing on Hanger: {clothes.has_hanger}\n")
-                out_file.write(f"Assigned to LED #: {clothes.led_number if clothes.has_hanger else 'N/A'}\n")
+                out_file.write(f"Assigned to LED #: {clothes.led_number if clothes.has_hanger else '0'}\n")
+                out_file.write(f"Current image number: {number}")
                 out_file.write("\n")
 
 #            # Save outfits
@@ -212,6 +193,7 @@ def load_closet(closet, filename):
 
     closet.clear()
     clothes = Clothing()
+    image_number = 0
 
     with open(filename, 'r') as in_file:
         for line in in_file:
@@ -232,12 +214,16 @@ def load_closet(closet, filename):
             elif "Clothing on Hanger:" in line:
                 clothes.has_hanger = (line.split(": ")[1].strip().lower() == 'true')
             elif "Assigned to LED #:" in line:
-                clothes.led_number = line.split(": ")[1].strip()
+                clothes.led_number = line.split(": ")[1]
+            elif "Current image number:" in line:
+                image_number = line.split(": ")[1]
 
     if clothes.name:
         closet.append(clothes)
-
     print(f"Closet loaded from {filename}")
+
+    return int(image_number)
+
 
 def get_color_from_detail(details):
     for detail in details:
@@ -300,21 +286,6 @@ def take_a_picture(closet):
         else:
             print("Image name not found in list. Please try again.")
 
-def create_outfit(outfits, outfit_name):
-    outfit = Outfit(outfit_name)
-    outfits.append(outfit)
-    return outfit
-
-def add_clothing_to_outfit(outfits, outfit_name, clothing_type, clothing_item):
-    for outfit in outfits:
-        if outfit.outfit_name == outfit_name:
-            outfit.add_clothing_item(clothing_type, clothing_item)
-            return
-        print(f"Outfit named {outfit_name} not found.")
-
-def print_outfits(outfits):
-    for outfit in outfits:
-        outfit.print_outfit()
 
 def hanger_system(closet, status):
     chosen_id = input(f"Enter the Clothing ID that you want to {'add to ' if status else 'take out from '} a hanger: ")
@@ -326,21 +297,27 @@ def hanger_system(closet, status):
             return
     print(f"Clothing with ID {chosen_id} not found.")
 
-def map_clothes_to_leds(num_clothes, num_leds):
-    #ANDREW5 TODO
+def map_closet_to_leds(closet, num_leds):
+    hanger_count = 0
+    hanger_position = 0
+    for clothing in closet:
+        if clothing.has_hanger == True:
+            hanger_count += 1
+
+    if (hanger_count <= 1):
+        return
+
+    for clothing in closet:
+        if clothing.has_hanger == True:
+            clothing.led_number = map_clothes_to_leds(hanger_position, hanger_count, num_leds)
+            hanger_position += 1
+
+
+def map_clothes_to_leds(hanger_position, num_hangers, num_leds):
     # Mapping from clothes to LEDs
-    constant = num_clothes / num_leds
-    clothes_to_leds = {}
-    leds_to_clothes = {i: [] for i in range(1, num_leds + 1)}
+    led_position = int(((hanger_position) * num_leds) / (num_hangers - 1))
+    return led_position
 
-    for i in range(num_clothes):
-        # Assigning each cloth to an LED
-        led_index = (i // constant) % num_leds + 1  # First two clothes share LED 1, next two LED 2, etc.
-        clothes_to_leds[i + 1] = led_index
-        leds_to_clothes[led_index].append(i + 1)
-
-    led_clothing_mapping = [f"LED {led}: Clothing positions {','.join(map(str,clothes))}" for led, clothes in leds_to_clothes.items()]
-    return led_clothing_mapping
 
 def assign_led(closet):
     current_led_number = 0

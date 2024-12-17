@@ -7,6 +7,7 @@ from PyQt5.QtSerialPort import *
 class Item_Register_Page(QWidget):
     def __init__(self, parent=None):
         self.image_number = 0
+        self.image_taken = False
         super().__init__(parent)
 
         self.layout = QVBoxLayout()

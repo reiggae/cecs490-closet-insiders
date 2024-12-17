@@ -16,11 +16,13 @@ from Pages.Outfit_Edit_Page import *
 from Keyboard.Keyboard import *
 from Inventory_System.closet_inventory import *
 from Inventory_System.RFIDReader import *
+from Inventory_System.outfit import *
 
 import sys
 import time
 import board
 import neopixel_spi as neopixel
+import shutil
 
 import subprocess
 
@@ -29,7 +31,7 @@ from picamera2 import Picamera2
 
 #TEMP ANDRE5 rename this if u want to do new save file
 save_file = "Rei2Test.txt"
-
+save_file_2 = "AndrewOutfitTest.txt"
 # Enumerating page numbers
 class Page(IntEnum):
     ITEM_MAIN = 0
@@ -80,32 +82,32 @@ class Main_Stack(QStackedWidget):
 
             self.setLayout(QVBoxLayout())
 
-            # ANDREW4 TODO i havent tested it out so prob wait for me, but this is what making outfit button should look like
+
             self.top_image = QLabel()
-            self.top_image.setPixmap(QPixmap(f"{outfit[outfit_index].top_piece.image_name}"))
+            self.top_image.setPixmap(QPixmap(f"{outfits[outfit_index].top.image_name}"))
             self.top_image.setScaledContents(True)
             self.top_image.setMaximumSize(150,150)
 
             self.bottom_image = QLabel()
-            self.bottom_image.setPixmap(QPixmap(f"{outfit[outfit_index].bottom_piece.image_name}"))
+            self.bottom_image.setPixmap(QPixmap(f"{outfits[outfit_index].bottom.image_name}"))
             self.bottom_image.setScaledContents(True)
             self.bottom_image.setMaximumSize(150,150)
 
             self.shoe_image = QLabel()
-            self.shoe_image.setPixmap(QPixmap(f"{outfit[outfit_index].shoe_piece.image_name}"))
+            self.shoe_image.setPixmap(QPixmap(f"{outfits[outfit_index].shoe.image_name}"))
             self.shoe_image.setScaledContents(True)
             self.shoe_image.setMaximumSize(150,150)
 
             # Initialize name
-            self.label = QLabel(closet[closet_index].name)
+            self.label = QLabel(outfits[outfit_index].name)
 
             self.layout().addWidget(self.label,alignment=Qt.AlignTop|Qt.AlignCenter)
             self.layout().addWidget(self.top_image,alignment=Qt.AlignTop|Qt.AlignCenter)
             self.layout().addWidget(self.bottom_image,alignment=Qt.AlignTop|Qt.AlignCenter)
             self.layout().addWidget(self.shoe_image,alignment=Qt.AlignTop|Qt.AlignCenter)
 
-            self.setMinimumSize(500,190)
-            self.setMaximumSize(500,190) #maybe 470
+            self.setMinimumSize(190,500)
+            self.setMaximumSize(190,500) #maybe 470
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -131,6 +133,7 @@ class Main_Stack(QStackedWidget):
         self.camera_page = Camera_Page()
         self.outfit_main_page = Outfit_Main_Page()
         self.outfit_register_page = Outfit_Register_Page()
+        self.outfit_edit_page = Outfit_Edit_Page()
 
         # Give pages parent functions
         # FLAG
@@ -157,6 +160,10 @@ class Main_Stack(QStackedWidget):
         self.outfit_main_page.clothes_button.clicked.connect(self.go_item_main_page)
         self.outfit_register_page.exit_button.clicked.connect(self.go_outfit_main_page)
         self.outfit_register_page.confirm_button.clicked.connect(self.register_outfit)
+        self.outfit_edit_page.exit_button.clicked.connect(self.go_outfit_main_page)
+        self.outfit_edit_page.confirm_button.clicked.connect(self.edit_outfit)
+        self.outfit_edit_page.locate_button.clicked.connect(self.locate_outfit)
+        self.outfit_edit_page.delete_button.clicked.connect(self.delete_outfit)
         #outfit search button
         #outfit
         #self.outfit_register_page.exit_button.clicked.connect(self.go_outfit_main_page)
@@ -168,6 +175,7 @@ class Main_Stack(QStackedWidget):
         self.addWidget(self.camera_page)
         self.addWidget(self.outfit_main_page)
         self.addWidget(self.outfit_register_page)
+        self.addWidget(self.outfit_edit_page)
 
     # ITEM MAIN PAGE FUNCTIONS
     def generate_item_buttons(self):
@@ -195,7 +203,9 @@ class Main_Stack(QStackedWidget):
         tags = self.item_register_page.tag_input.toPlainText().split('\n') # this looks like "red\nshirt\n"
         tags = [tag.strip() for tag in tags if tag.strip()]
 
-        if Clothing.check_existing_id(closet, id) == False:   # True flag is temp
+        if Clothing.check_existing_id(closet, id) == False:
+            if(self.item_register_page.image_taken == False):
+                shutil.copy('Item_Images/placeholder_shirt.png', f"Item_Images/image_{self.item_register_page.image_number}.jpg")
             image = f"Item_Images/image_{self.item_register_page.image_number}.jpg"
             self.item_register_page.image_number += 1
             input_clothing(closet, id, name, image, tags)
@@ -215,22 +225,21 @@ class Main_Stack(QStackedWidget):
         self.item_register_page.image_preview.setPixmap(QPixmap('Item_Images/placeholder_shirt.png'))
         self.item_register_page.tag_input.setPlainText("")
 
+        self.item_register_page.image_taken = False
+
     def sort_closet(self,closet):
         sort_by_color(closet)
-        assign_led(closet)
+        map_closet_to_leds(closet, num_leds = 10)
 
     def on_rfid_detected(self, rfid_data):
         print(rfid_data)
 
-        """
-        ANDREW5 TODO
-        if RFID tag already exist:
-            self.setup_item_edit_page(index of that item)
-            self.go_item_edit_page()
-            self.locate_clothing()
-        else:
-            run this below
-        """
+        for i, clothing in enumerate(closet):
+            if rfid_data == clothing.ID:
+                self.setup_item_edit_page(i)
+                self.go_item_edit_page()
+                self.locate_item()
+                return
 
         curr_index = self.currentIndex()
         if  curr_index == Page.ITEM_MAIN or curr_index == Page.ITEM_REGISTER:
@@ -281,18 +290,26 @@ class Main_Stack(QStackedWidget):
         self.go_item_main_page()
 
     def locate_item(self):
-        """#ANDREW5 TODO
-        red if top, blue if bottom, green if shoe, white if none
 
-        this might be permanent: toggle is_checked_in flag here
-        if(closet[].is_checked_in) turn LED off
-        else, turn LED on
-        it might be the other way around i forgot
-        """
+        clothing = closet[self.item_edit_page.closet_index]
 
+        led_index = int(clothing.led_number)
 
-        led_index = int(closet[self.item_edit_page.closet_index].led_number)
-        self.pixels[led_index] = LED_Color.WHITE # 0xrrggbb
+        if clothing.led_on == True:
+            self.pixels[led_index] = LED_Color.CLEAR
+            clothing.led_on = False
+        elif clothing.led_on == False:
+            if clothing.contains("top"):
+                self.pixels[led_index] = LED_Color.RED
+                clothing.led_on = True
+            elif clothing.contains("bottom"):
+                self.pixels[led_index] = LED_Color.BLUE
+            elif clothing.contains("shoe"):
+                self.pixels[led_index] = LED_Color.GREEN
+            else:
+                self.pixels[led_index] = LED_Color.WHITE # 0xrrggbb
+            clothing.led_on = True
+
         self.pixels.show()
 
 
@@ -308,14 +325,16 @@ class Main_Stack(QStackedWidget):
             self.camera_page.picam2.switch_mode_and_capture_file(self.camera_page.cfg, f"{closet[self.item_edit_page.closet_index].image_name}", signal_function=self.camera_page.qpicamera2.signal_done)
 
     def capture_done(self,job):
+        #ANDREW6
         self.camera_page.result = self.camera_page.picam2.wait(job)
         self.camera_page.camera_button.setEnabled(True)
 
         if(self.camera_page.new_image):
             self.item_register_page.image_preview.setPixmap(QPixmap(f"Item_Images/image_{self.item_register_page.image_number}.jpg"))
+            self.item_register_page.image_taken = True
             self.go_item_register_page()
         else:
-            self.item_edit_page.image_preview.setPixmap(QPixmap(f"closet[self.item_edit_page.closet_index].image_name"))
+            self.item_edit_page.image_preview.setPixmap(QPixmap(f"{closet[self.item_edit_page.closet_index].image_name}"))
             self.go_item_edit_page()
 
     def go_previous_page(self):
@@ -329,15 +348,15 @@ class Main_Stack(QStackedWidget):
         value_count = 0
 
         # Deletes existing item buttons
-        for i in reversed(range(self.item_outfit_page.main_scroll_layout.count())):
+        for i in reversed(range(self.outfit_main_page.main_scroll_layout.count())):
             self.outfit_main_page.main_scroll_layout.itemAt(i).widget().setParent(None)
 
         search_term = self.outfit_main_page.search_bar.text()
 
         # REI6 TODO
-        for i in range(len(closet)):
+        for i in range(len(outfits)):
             if outfits[i].contains(search_term):
-                newButton = self.clothing_button(i)
+                newButton = self.outfit_button(i)
                 newButton.clicked.connect(lambda state, item_index = i: self.setup_outfit_edit_page(item_index))
                 self.outfit_main_page.main_scroll_layout.addWidget(newButton, value_count//3, value_count%3, alignment=Qt.AlignTop|Qt.AlignCenter)
                 value_count += 1
@@ -393,24 +412,146 @@ class Main_Stack(QStackedWidget):
 
     def register_outfit(self):
 
-        """
-        ANDREW5 TODO make dis happen
-
         name = self.outfit_register_page.name_input.text()
-        top = self.outfit_register_page.selected_top
-        bottom = self.outfit_register_page.selected_bottom
-        shoe = self.outfit_register_page.selected_shoe
+        top = closet[self.outfit_register_page.selected_top]
+        bottom = closet[self.outfit_register_page.selected_bottom]
+        shoe = closet[self.outfit_register_page.selected_shoe]
         tags = self.outfit_register_page.tag_input.toPlainText().split('\n') # this looks like "professional\ndark\n"
         tags = [tag.strip() for tag in tags if tag.strip()]
 
-        input_outfit(name, top, bottom, shoe, tags)
+        input_outfit(outfits, name, top, bottom, shoe, tags)
         # dont need to worry about any overlapping info, we will also not sort this in any way
-        """
+
         self.go_outfit_main_page()
 
     # OUTFIT EDIT PAGE FUNCTIONS
+    def setup_outfit_edit_page(self, outfit_index):
+            outfit = outfits[outfit_index]
+            self.outfit_edit_page.outfit_index = outfit_index
 
-    # Stacked widget traversing functions
+            self.outfit_edit_page.name_input.setText(outfit.name)
+
+            self.outfit_edit_page.top_piece_bar.piece_image.setPixmap(QPixmap(f"{outfits[outfit_index].top.image_name}"))
+            self.outfit_edit_page.top_piece_bar.piece_image.setScaledContents(True)
+            self.outfit_edit_page.top_piece_bar.piece_image.setMaximumSize(100,100)
+            self.outfit_edit_page.selected_top = closet.index(outfit.top)
+
+            self.outfit_edit_page.bottom_piece_bar.piece_image.setPixmap(QPixmap(f"{outfits[outfit_index].bottom.image_name}"))
+            self.outfit_edit_page.bottom_piece_bar.piece_image.setScaledContents(True)
+            self.outfit_edit_page.bottom_piece_bar.piece_image.setMaximumSize(100,100)
+            self.outfit_edit_page.selected_bottom = closet.index(outfit.bottom)
+
+            self.outfit_edit_page.shoe_piece_bar.piece_image.setPixmap(QPixmap(f"{outfits[outfit_index].shoe.image_name}"))
+            self.outfit_edit_page.shoe_piece_bar.piece_image.setScaledContents(True)
+            self.outfit_edit_page.shoe_piece_bar.piece_image.setMaximumSize(100,100)
+            self.outfit_edit_page.selected_shoe = closet.index(outfit.shoe)
+
+            tag_input_text = ""
+            for tag in outfit.tags:
+                tag_input_text += f"{tag}\n"
+
+            self.outfit_edit_page.tag_input.setPlainText(tag_input_text)
+
+            self.go_outfit_edit_page()
+
+    def generate_outfit_edit_selection_buttons(self):
+
+        for i in reversed(range(self.outfit_edit_page.top_piece_bar.piece_scroll_layout.count())):
+            self.outfit_edit_page.top_piece_bar.piece_scroll_layout.itemAt(i).widget().setParent(None)
+
+        for i in reversed(range(self.outfit_edit_page.bottom_piece_bar.piece_scroll_layout.count())):
+            self.outfit_edit_page.bottom_piece_bar.piece_scroll_layout.itemAt(i).widget().setParent(None)
+
+        for i in reversed(range(self.outfit_edit_page.shoe_piece_bar.piece_scroll_layout.count())):
+            self.outfit_edit_page.shoe_piece_bar.piece_scroll_layout.itemAt(i).widget().setParent(None)
+
+        # if clothing item has "top"
+        for i, clothing in enumerate(closet):
+            if clothing.contains("top"):
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.edit_as_top(item_index))
+                self.outfit_edit_page.top_piece_bar.piece_scroll_layout.addWidget(newButton)
+        # else if clothing item has "bottom"
+            elif clothing.contains("bottom"):
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.edit_as_bottom(item_index))
+                self.outfit_edit_page.bottom_piece_bar.piece_scroll_layout.addWidget(newButton)
+            elif clothing.contains("shoe"):
+        # else if clothing item has "shoe"
+                newButton = self.clothing_button(i)
+                newButton.clicked.connect(lambda state, item_index = i: self.edit_as_shoe(item_index))
+                self.outfit_edit_page.shoe_piece_bar.piece_scroll_layout.addWidget(newButton)
+
+    def edit_as_top(self, item_index):
+        self.outfit_edit_page.top_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
+        self.outfit_edit_page.top_piece_bar.piece_image.setScaledContents(True)
+        self.outfit_edit_page.top_piece_bar.piece_image.setMaximumSize(100,100)
+        self.outfit_edit_page.selected_top = item_index
+
+    def edit_as_bottom(self, item_index):
+        self.outfit_edit_page.bottom_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
+        self.outfit_edit_page.bottom_piece_bar.piece_image.setScaledContents(True)
+        self.outfit_edit_page.bottom_piece_bar.piece_image.setMaximumSize(100,100)
+        self.outfit_edit_page.selected_bottom = item_index
+
+    def edit_as_shoe(self, item_index):
+        self.outfit_edit_page.shoe_piece_bar.piece_image.setPixmap(QPixmap(f"{closet[item_index].image_name}"))
+        self.outfit_edit_page.shoe_piece_bar.piece_image.setScaledContents(True)
+        self.outfit_edit_page.shoe_piece_bar.piece_image.setMaximumSize(100,100)
+        self.outfit_edit_page.selected_shoe = item_index
+
+    def edit_outfit(self):
+
+        name = self.outfit_edit_page.name_input.text()
+        top = closet[self.outfit_edit_page.selected_top]
+        bottom = closet[self.outfit_edit_page.selected_bottom]
+        shoe = closet[self.outfit_edit_page.selected_shoe]
+        tags = self.outfit_edit_page.tag_input.toPlainText().split('\n') # this looks like "professional\ndark\n"
+        tags = [tag.strip() for tag in tags if tag.strip()]
+
+        outfit_index = self.outfit_edit_page.outfit_index
+        update_outfit(outfits, outfit_index, name, top, bottom, shoe, tags)
+        # dont need to worry about any overlapping info, we will also not sort this in any way
+
+        self.go_outfit_main_page()
+
+    def locate_outfit(self):
+        outfit = outfits[self.outfit_edit_page.outfit_index]
+
+        self.locate_outfit_item(outfit.top)
+        self.locate_outfit_item(outfit.bottom)
+        self.locate_outfit_item(outfit.shoe)
+
+    def locate_outfit_item(self, item):
+
+        clothing = item
+
+        led_index = int(clothing.led_number)
+
+        if clothing.led_on == True:
+            self.pixels[led_index] = LED_Color.CLEAR
+            clothing.led_on = False
+        elif clothing.led_on == False:
+            if clothing.contains("top"):
+                self.pixels[led_index] = LED_Color.RED
+                clothing.led_on = True
+            elif clothing.contains("bottom"):
+                self.pixels[led_index] = LED_Color.BLUE
+            elif clothing.contains("shoe"):
+                self.pixels[led_index] = LED_Color.GREEN
+            else:
+                self.pixels[led_index] = LED_Color.WHITE # 0xrrggbb
+            clothing.led_on = True
+
+        self.pixels.show()
+
+    def delete_outfit(self):
+        outfit_index = self.outfit_edit_page.outfit_index
+        remove_outfit(outfits, outfit_index)
+
+        self.go_outfit_main_page()
+
+    # STACKED WIDGET TRAVERSAL FUNCTIONS
     def go_item_main_page(self):
         self.keyboard.KB_Off()
         self.generate_item_buttons()
@@ -431,10 +572,12 @@ class Main_Stack(QStackedWidget):
 
     def go_camera_edit_page(self):
         self.keyboard.KB_Off()
+        self.camera_page.new_image = False
         self.setCurrentIndex(Page.CAMERA)
 
     def go_outfit_main_page(self):
         self.keyboard.KB_Off()
+        self.generate_outfit_buttons()
         self.setCurrentIndex(Page.OUTFIT_MAIN)
 
     def go_outfit_register_page(self):
@@ -444,6 +587,7 @@ class Main_Stack(QStackedWidget):
 
     def go_outfit_edit_page(self):
         self.keyboard.KB_Off()
+        self.generate_outfit_edit_selection_buttons()
         self.setCurrentIndex(Page.OUTFIT_EDIT)
 
 
@@ -466,29 +610,30 @@ class Main_Stack(QStackedWidget):
         self.keyboard.KB_Off() # Turn off keyboard
         self.pixels.fill(LED_Color.CLEAR) # Turn off LEDs
         self.pixels.show()
-        save_closet(closet, save_file)
+        save_closet(closet, self.item_register_page.image_number, save_file)
+        save_outfits(closet, outfits, save_file_2)
 
 #ANDREW5 TODO debug button on outfit main if u need it
 def debug_function():
-    print("hi")
+    print_outfits(outfits)
 
 if __name__ == "__main__":
     app = QApplication([])
 
     stacked_widget = Main_Stack()
-    load_closet(closet, save_file)
-    """ANDREW5 TODO load the current image number index too, maybe have load_closet return image number?
-    stacked_widget.item_register_page.image_number = loaded_number
-    """
+    stacked_widget.item_register_page.image_number = load_closet(closet, save_file)
+    load_outfits(closet, outfits, save_file_2)
+    print_closet(closet)
+
     stacked_widget.go_item_main_page()
 
     stacked_widget.show()
     stacked_widget.showMaximized()
 
 
-    debug_button = QPushButton("DEBUG")
-    debug_button.clicked.connect(debug_function)
-    stacked_widget.outfit_main_page.layout.addWidget(debug_button)
+#    debug_button = QPushButton("DEBUG")
+#    debug_button.clicked.connect(debug_function)
+#    stacked_widget.outfit_main_page.layout.addWidget(debug_button)
 
     app.exec()
 
