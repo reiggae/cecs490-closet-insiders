@@ -95,7 +95,7 @@ class Item_Edit_Page(QWidget):
         self.image_preview = QLabel()
         self.image_preview.setPixmap(QPixmap('Item_Images/placeholder_shirt.png'))
         self.image_preview.setScaledContents(True)
-        self.image_preview.setMaximumSize(100,100)
+        self.image_preview.setMaximumSize(400,400)
 
         self.camera_button = QPushButton("Open Camera")
 

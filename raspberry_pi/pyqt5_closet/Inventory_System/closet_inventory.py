@@ -19,6 +19,12 @@ class color_order(IntEnum):
     GRAY = 9
     BROWN = 10
 
+class clothing_type(IntEnum):
+    TOP = 1
+    BOTTOM = 2
+    SHOE = 3
+    OTHER = 4
+
 class Clothing:
     def __init__(self):
         self.name = ""
@@ -232,8 +238,9 @@ def load_closet(closet, filename):
 
     return int(image_number)
 
-
-
+def sort_by_alphabet(closet):
+    closet.sort(key=lambda clothing:clothing.name.lower())
+    closet[:] = closet
 def get_color_from_detail(details):
     for detail in details:
         for color in color_order:
@@ -254,6 +261,29 @@ def sort_by_color(closet):
     colored_clothes.sort(key=lambda x: x[0].value)
 
     closet[:] = [clothing for _, clothing in colored_clothes] + uncolored_clothes
+
+def get_clothing_type_from_detail(details):
+    for detail in details:
+        for type in clothing_type:
+            if type.name.lower() in detail.lower():
+                return type
+    return None
+
+def sort_by_type(closet):
+    typed_clothes = []
+    other_clothes = []
+
+    for clothing in closet:
+        type = get_clothing_type_from_detail(clothing.details)
+        if type:
+            typed_clothes.append((type, clothing))
+        else:
+            other_clothes.append(clothing)
+    typed_clothes.sort(key=lambda x: x[0].value)
+
+    closet[:] = [clothing for _, clothing in typed_clothes] + other_clothes
+
+
 
 def checking_system(closet, status, ser = None):
     if ser:

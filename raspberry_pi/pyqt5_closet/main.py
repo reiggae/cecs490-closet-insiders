@@ -318,11 +318,14 @@ class Main_Stack(QStackedWidget):
 
     def sort_closet(self,closet, option):
         if option == "Sort By Color":
+            print("Sort Color")
             sort_by_color(closet)
         elif option == "Sort By Alphabet":
-            pass #ANDREW7 TODO
+            print("Sort Alpha")
+            sort_by_alphabet(closet)
         elif option == "Sort By Type":
-            pass
+            print("Sort Type")
+            sort_by_type(closet)
 
         map_closet_to_leds(closet, num_leds = led_count)
 
@@ -484,6 +487,9 @@ class Main_Stack(QStackedWidget):
             self.pixels[led_index] = LED_Color.CLEAR
             clothing.led_on = False
         elif clothing.led_on == False:
+            if clothing.has_hanger == False:
+                return
+
             if clothing.contains("top"):
                 self.pixels[led_index] = LED_Color.RED
                 clothing.led_on = True

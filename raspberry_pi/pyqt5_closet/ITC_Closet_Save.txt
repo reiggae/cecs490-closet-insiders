@@ -9,7 +9,7 @@ Image Name: Item_Images/image_5.png
 Checked in Status: True
 Clothing on Hanger: True
 Assigned to LED #: 0
-Current image number: 15
+Current image number: 16
 Clothing ID: 57B7ABDB
 Clothing Name: Crocles
 - blue
@@ -18,7 +18,7 @@ Image Name: Item_Images/image_4.png
 Checked in Status: True
 Clothing on Hanger: False
 Assigned to LED #: 0
-Current image number: 15
+Current image number: 16
 Clothing ID: ECE567CE
 Clothing Name: EATS Shirt
 - black
@@ -28,7 +28,16 @@ Image Name: Item_Images/image_3.png
 Checked in Status: True
 Clothing on Hanger: True
 Assigned to LED #: 3
-Current image number: 15
+Current image number: 16
+Clothing ID: 9CBCE55D
+Clothing Name: holiday shoes
+- white
+- shoe
+Image Name: Item_Images/image_8.png
+Checked in Status: True
+Clothing on Hanger: False
+Assigned to LED #: 0
+Current image number: 16
 Clothing ID: 2CA1BD5D
 Clothing Name: walter
 - more white
@@ -40,26 +49,18 @@ Image Name: Item_Images/image_6.png
 Checked in Status: True
 Clothing on Hanger: True
 Assigned to LED #: 6
-Current image number: 15
-Clothing ID: 9CBCE55D
-Clothing Name: holiday shoes
-- white
-- shoe
-Image Name: Item_Images/image_8.png
-Checked in Status: True
-Clothing on Hanger: False
-Assigned to LED #: 0
-Current image number: 15
+Current image number: 16
 Clothing ID: 524E750E
 Clothing Name: Chicken
 - Rei
 - brown
+- bottom
 - hanger
 Image Name: Item_Images/image_9.png
 Checked in Status: True
 Clothing on Hanger: True
 Assigned to LED #: 10
-Current image number: 15
+Current image number: 16
 Clothing ID: ECFFF75D
 Clothing Name: Eevee
 - Vaporeon
@@ -75,4 +76,4 @@ Image Name: Item_Images/image_10.png
 Checked in Status: False
 Clothing on Hanger: False
 Assigned to LED #: 0
-Current image number: 15
+Current image number: 16
