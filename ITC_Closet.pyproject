@@ -1,0 +1,3 @@
+{
+    "files": ["Keyboard/KB_Off.sh","Pages/Item_Main_Page.py","Item_Images/image_3.png","Item_Images/espongbob.png","Item_Images/image_0.png","Inventory_System/closet_inventory.py","ITC_Outfit_Save.txt","ITC_Closet_Save.txt","Item_Images/image_2.png","Pages/Item_Register_Page.py","Item_Images/placeholder_shirt.png","Pages/Outfit_Register_Page.py","Keyboard/KB_Start.sh","Pages/Outfit_Main_Page.py","Pages/Camera_Page.py","Item_Images/image_1.png","Inventory_System/RFIDReader.py","Inventory_System/outfit.py","main.py","Pages/Outfit_Edit_Page.py","Pages/Item_Edit_Page.py","Keyboard/Keyboard.py","Item_Images/placeholder_shoes.png","Item_Images/placeholder_pants.png","Item_Images/hanger.png"]
+}

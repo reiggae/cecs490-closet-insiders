@@ -1,0 +1,170 @@
+CLOTHING ITEMS:
+Clothing ID: 4361241B
+Clothing Name: Grad
+- Hat
+- Rei
+- yellow
+- black
+Image Name: Item_Images/image_20.png
+Checked in Status: True
+Clothing on Hanger: False
+Assigned to LED #: 0
+Current image number: 23
+Clothing ID: FCCF0AD9
+Clothing Name: reipant
+- Rei
+- hollister
+- sweats
+- green
+- bottom
+- hanger
+Image Name: Item_Images/image_5.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 0
+Current image number: 23
+Clothing ID: 57B7ABDB
+Clothing Name: Crocles
+- Rei
+- blue
+- shoe
+- hanger
+Image Name: Item_Images/image_4.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 2
+Current image number: 23
+Clothing ID: 178B0DAF
+Clothing Name: Hawaiian
+- Rei
+- Button Up
+- Short Sleeve
+- purple
+- white
+- top
+- hanger
+Image Name: Item_Images/image_17.png
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 5
+Current image number: 23
+Clothing ID: 9722CEDB
+Clothing Name: Dress Shirt
+- Rei
+- Formal
+- Vest
+- Long Sleeve
+- black
+- white
+- top
+- hanger
+Image Name: Item_Images/image_18.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 7
+Current image number: 23
+Clothing ID: ECE567CE
+Clothing Name: EATS Shirt
+- Rei
+- Engineering
+- Short Sleeve
+- black
+- top
+- hanger
+Image Name: Item_Images/image_3.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 10
+Current image number: 23
+Clothing ID: A33A331B
+Clothing Name: Slacks
+- Rei
+- Formal
+- black
+- bottom
+Image Name: Item_Images/image_21.png
+Checked in Status: False
+Clothing on Hanger: False
+Assigned to LED #: 0
+Current image number: 23
+Clothing ID: D7B4C0DB
+Clothing Name: cape lookin sweater
+- Andrew
+- Sweater
+- black
+Image Name: Item_Images/image_19.png
+Checked in Status: True
+Clothing on Hanger: False
+Assigned to LED #: 0
+Current image number: 23
+Clothing ID: 2CA1BD5D
+Clothing Name: walter
+- Rei
+- more white
+- mr. white
+- short sleeve
+- white
+- top
+- hanger
+Image Name: Item_Images/image_6.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 12
+Current image number: 23
+Clothing ID: 9CBCE55D
+Clothing Name: holiday shoes
+- charles
+- drip
+- willem
+- dafoe
+- white
+- shoe
+- hanger
+Image Name: Item_Images/image_8.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 15
+Current image number: 23
+Clothing ID: 524E750E
+Clothing Name: Chicken
+- Rei
+- brown
+- bottom
+- hanger
+Image Name: Item_Images/image_9.png
+Checked in Status: True
+Clothing on Hanger: True
+Assigned to LED #: 17
+Current image number: 23
+Clothing ID: 7CD9BD5D
+Clothing Name: Slippers
+- Raiana
+- Women
+- Size 7.5
+- Occassion
+- Party
+- brown
+- shoe
+- hanger
+Image Name: Item_Images/image_22.png
+Checked in Status: False
+Clothing on Hanger: True
+Assigned to LED #: 20
+Current image number: 23
+Clothing ID: ECFFF75D
+Clothing Name: Eevee
+- Vaporeon
+- Jolteon
+- Flareon
+- Umbreon
+- Espeon
+- Leafeon
+- Glaceon
+- Sylveon
+- Raiana
+- brown
+Image Name: Item_Images/image_10.png
+Checked in Status: False
+Clothing on Hanger: False
+Assigned to LED #: 0
+Current image number: 23

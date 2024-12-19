@@ -1,0 +1,25 @@
+OUTFITS:
+Outfit Name: the demo fit
+Top: None
+Top: 5
+Bottom: 1
+Shoe: 2
+- eric
+- presentation
+Outfit Name: hawaiian drip
+Top: None
+Top: 3
+Bottom: 10
+Shoe: 9
+- awesome
+Outfit Name: super serious
+Top: None
+Top: 4
+Bottom: 6
+Shoe: None
+- formal
+Outfit Name: Eevee Hat Fit
+Top: None
+Top: 8
+Bottom: 10
+Shoe: 11
